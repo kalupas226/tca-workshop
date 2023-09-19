@@ -170,6 +170,12 @@ public struct RepositoryListView: View {
           store.send(.onAppear)
         }
         .navigationTitle("Search Repositories")
+        .alert(
+          store: store.scope(
+            state: \.$alert,
+            action: { .alert($0) }
+          )
+        )
         .searchable(
           text: viewStore.$query,
           placement: .navigationBarDrawer,
@@ -189,7 +195,7 @@ public struct RepositoryListView: View {
   }
 }
 
-#Preview {
+#Preview("API Succeeded") {
   RepositoryListView(
     store: .init(
       initialState: RepositoryList.State()
@@ -198,6 +204,23 @@ public struct RepositoryListView: View {
     } withDependencies: {
       $0.gitHubAPIClient.searchRepositories = { _ in
         (1...20).map { .mock(id: $0) }
+      }
+    }
+  )
+}
+
+#Preview("API Failed") {
+  enum PreviewError: Error {
+    case fetchFailed
+  }
+  return RepositoryListView(
+    store: .init(
+      initialState: RepositoryList.State()
+    ) {
+      RepositoryList()
+    } withDependencies: {
+      $0.gitHubAPIClient.searchRepositories = { _ in
+        throw PreviewError.fetchFailed
       }
     }
   )
