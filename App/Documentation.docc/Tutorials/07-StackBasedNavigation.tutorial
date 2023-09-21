@@ -1,0 +1,17 @@
+@Tutorial(time: 20) {
+  @Intro(title: "Stack-based navigation") {
+    リポジトリ一覧画面からリポジトリ詳細画面への画面遷移機能を追加していきましょう。
+  }
+
+  @Section(title: "Reducer の実装") {
+    @ContentAndMedia {
+      Reducer 実装していきましょう。
+    }
+  }
+  
+  @Section(title: "View の実装") {
+    @ContentAndMedia {
+      View も実装していきましょう。
+    }
+  }
+}

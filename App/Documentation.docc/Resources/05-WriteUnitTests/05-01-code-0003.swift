@@ -1,0 +1,20 @@
+import ComposableArchitecture
+import Entity
+import XCTest
+
+@testable import RepositoryListFeature
+
+@MainActor
+final class RepositoryListFeatureTests: XCTestCase {
+  func testOnAppear_SearchSucceeded() async {
+    let store = TestStore(
+      initialState: RepositoryList.State()
+    ) {
+      RepositoryList()
+    }
+
+    await store.send(.onAppear) {
+      $0.isLoading = true
+    }
+  }
+}

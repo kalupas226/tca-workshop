@@ -12,9 +12,12 @@ let package = Package(
     .library(name: "FavoriteRepositoryListFeature", targets: ["FavoriteRepositoryListFeature"]),
   ],
   dependencies: [
+    .package(url: "https://github.com/pointfreeco/combine-schedulers", from: "1.0.0"),
     .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.2.0"),
     .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.0.0"),
     .package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay", from: "1.0.2"),
+    .package(url: "https://github.com/pointfreeco/swift-identified-collections", from: "1.0.0"),
+    .package(url: "https://github.com/pointfreeco/swiftui-navigation", from: "1.0.2"),
   ],
   targets: [
     .target(
@@ -49,12 +52,16 @@ let package = Package(
         "GitHubAPIClient",
         "RepositoryDetailFeature",
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+        .product(name: "Dependencies", package: "swift-dependencies"),
+        .product(name: "IdentifiedCollections", package: "swift-identified-collections"),
+        .product(name: "SwiftUINavigationCore", package: "swiftui-navigation"),
       ]
     ),
     .testTarget(
       name: "RepositoryListFeatureTests",
       dependencies: [
         "RepositoryListFeature",
+        .product(name: "CombineSchedulers", package: "combine-schedulers"),
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
       ]
     ),
@@ -65,6 +72,7 @@ let package = Package(
         "GitHubAPIClient",
         "UserDefaultsClient",
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+        .product(name: "Dependencies", package: "swift-dependencies"),
       ]
     ),
     .testTarget(
@@ -82,6 +90,8 @@ let package = Package(
         "RepositoryDetailFeature",
         "UserDefaultsClient",
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+        .product(name: "Dependencies", package: "swift-dependencies"),
+        .product(name: "IdentifiedCollections", package: "swift-identified-collections"),
       ]
     ),
     .testTarget(

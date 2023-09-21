@@ -1,0 +1,101 @@
+@Tutorial(time: 20) {
+  @Intro(title: "TCA における Bindings・Cancellation") {
+    次はここまでに作成してきたリポジトリ一覧画面に、リポジトリ検索機能を追加していきます。
+    
+    このチュートリアルでは、検索機能の実装を通して、TCA における Bindings と Cancellation について学ぶことができます。
+  }
+  
+  @Section(title: "BindingReducer") {
+    @ContentAndMedia {
+      リポジトリ一覧画面に検索機能を追加する前に、まずは Reducer で Binding を扱えるようにしていきましょう。  
+      Pure SwiftUI では、通常 Binding を表現する際に `@Binding` を利用しますが、TCA においては `@BindingState`, `BindableAction`, `BindingAction`, `BindingReducer` という API を利用することで Binding が表現できます。
+      
+    }
+    @Steps {
+      @Step {
+        まずは、`RepositoryList` Reducer に検索機能のための状態を追加します。  
+        検索機能を実現するために、後ほど SwiftUI の `searchable` API を利用しますが、その API は `text` という引数に `Binding<String>` な型を要求します。  
+        TCA には Binding value を表現するための API である `@BindingState` Property Wrapper が用意されているため、これを利用して `searchable` に提供するための状態を追加します。
+        
+        @Code(name: "RepositoryListView.swift", file: 03-01-code-0001, previousFile: 03-01-code-0001-previous)
+      }
+      @Step {
+        次に TCA において Binding を表現するために必要となる新しい Action も追加します。  
+        Action においては、`BindableAction` と `BindingAction` という API を利用します。  
+        `BindableAction` は `Action` に準拠させるための protocol として機能し、`BindableAction` protocol に準拠するためには `binding(BindingAction<State>)` という case を追加する必要があるため、それらを追加しましょう。
+        
+        @Code(name: "RepositoryListView.swift", file: 03-01-code-0002)
+      }
+      @Step {
+        最後に TCA における Binding の処理を実行する核である、`BindingReducer` を `body` に組み込む必要があります。  
+        この API は `body` に組み込むだけで、先ほど追加した `@BindingState`, `BindingAction` が機能するように作られています。
+        
+        @Code(name: "RepositoryListView.swift", file: 03-01-code-0003)
+      }
+    }
+  }
+  @Section(title: "View への検索機能の追加") {
+    @ContentAndMedia {
+      まだ Reducer に検索機能は追加していませんが、検索のための状態は用意されたので、一旦 `RepositoryListView` に検索のための機能を追加していきます。  
+
+    }
+    @Steps {
+      @Step {
+        View に検索機能を追加すると説明しましたが、SwiftUI には `searchable` が用意されているため、今回はそれを利用すれば View 側の実装はほとんど終わりです。  
+        `searchable` には前述の通り、`Binding<String>` を提供する必要があるため、先ほど用意した `@BindingState` を提供します。  
+        `ViewStore` 経由で `@BindingState` の projectedValue を利用する subscript が用意されており、`viewStore.$value` のようにすると `Binding<Value>` が取得できるようになっているため、それを利用します。  
+        ついでに `navigationTitle` もつけておきましょう。
+
+        @Code(name: "RepositoryListView.swift", file: 03-02-code-0001, previousFile: 03-02-code-0001-previous)
+      }
+      @Step {
+        `navigationTitle` と `searchable` は `NavigationStack` 配下で機能する API であるため、`NavigationStack` で囲っておきましょう。
+
+        @Code(name: "RepositoryListView.swift", file: 03-02-code-0002)
+      }
+    }
+  }
+  @Section(title: "Reducer への検索機能の追加") {
+    @ContentAndMedia {
+      検索機能実装のための準備が整ったので、実際に Reducer に検索機能を実装していきましょう。  
+
+    }
+    @Steps {
+      @Step {
+        検索機能を実装するためには `searchable` の `text` が変更された際に、GitHub API の search エンドポイントに対してリクエストする必要があります。  
+        現在、`searchable` の `text` には `@BindingState` の `viewStore.$query` というものを指定していますが、この `query` が変更された時に API リクエストしなければいけません。  
+        TCA の Binding 系の API には、`@BindingState` の変更タイミングに介入するための方法が用意されているため、Reducer にその処理を追加してみましょう。
+
+        @Code(name: "RepositoryListView.swift", file: 03-03-code-0001, previousFile: 03-01-code-0003)
+      }
+      @Step {
+        `query` が変更された時には search エンドポイントに対してリクエストする必要がありますが、`onAppear` のタイミングで既に API リクエストしているため、その処理を使い回します。  
+        ほぼ共通の処理になるため function に処理を切り出しつつ、それを利用するようにしてみましょう。
+        
+        @Code(name: "RepositoryListView.swift", file: 03-03-code-0002)
+        
+        > TCA で共通処理を切り出す際は、Action を増やすのではなく、今回のように function を作ってそこにまとめるようにしましょう。  
+        > TCA において Action を send する行為は、決してコストが低いものではなく、Action を send しなくても良いようにできるのであればそれがベターです。  
+        > 可読性とのバランスも考慮する必要がありますが、TCA を利用する際はそのことを頭に入れながら開発しましょう。
+      }
+      ここまでで `query` を入力する度にリポジトリ検索して、それがリストに反映されるような機能を作ることができました。  
+      しかし、現状の実装のままだと `query` 少しでも入力する度に API リクエストが実行されてしまうようになっており、通信コスト的にもサーバー側的にもあまり良いとは言えない状況になっています。 
+      @Step {
+        `query` 入力の度に API リクエストするのではなく、`query` 入力から 0.3 秒経つごとにリクエストするような実装に書き換えて、問題を解決しましょう。  
+        このような挙動のことを debounce と呼んだりしますが、TCA には `Effect.debounce` が用意されているため、これを `Effect.run` につけてあげると簡単にその挙動を実装できます。  
+        `debounce` には `Hashable` な `id` が必要となるため、そのための enum を用意しています。  
+        また、`debounce` の挙動を実現するために、一つ Action を追加しています。
+        
+        @Code(name: "RepositoryListView.swift", file: 03-03-code-0003)
+
+        >  `Effect.debounce` は内部的には `Effect.cancellable` という API を利用しており、これによって指定の秒数内に複数の処理が実行された場合に、古いものはキャンセルするという実装によって、debounce の挙動を実現しています。
+      }
+      @Step {
+        さて、検索機能と呼べるものが実装できたので、アプリを起動して挙動を確認しておきましょう。
+
+        @Image(source: "03-03-image-0004", alt: "")
+      }
+      検索機能が一通り実装し終わったところで、次は開発を効率的に進めるための要である Xcode Previews の改善を行っていきましょう！
+    }
+  }
+}

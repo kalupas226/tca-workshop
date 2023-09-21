@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		C762691C2AAD49F8008D03E7 /* AppFeature in Frameworks */ = {isa = PBXBuildFile; productRef = C762691B2AAD49F8008D03E7 /* AppFeature */; };
+		C79309172ABA7DF20056BD20 /* Documentation.docc in Sources */ = {isa = PBXBuildFile; fileRef = C79309162ABA7DF20056BD20 /* Documentation.docc */; };
 		C7A7DB6D2AAD4C8D0029DCBA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C7A7DB682AAD4C8D0029DCBA /* Assets.xcassets */; };
 		C7A7DB6E2AAD4C8D0029DCBA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C7A7DB6A2AAD4C8D0029DCBA /* Preview Assets.xcassets */; };
 		C7A7DB6F2AAD4C8D0029DCBA /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A7DB6C2AAD4C8D0029DCBA /* App.swift */; };
@@ -17,6 +18,7 @@
 		C76268EC2AAD4420008D03E7 /* TCAWorkshop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TCAWorkshop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C785D7D82ABFF78A002DFB31 /* TCAWorkshop-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "TCAWorkshop-Info.plist"; sourceTree = "<group>"; };
 		C78D31AE2AAD484800EE9727 /* TCAWorkshop */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = TCAWorkshop; path = ..; sourceTree = "<group>"; };
+		C79309162ABA7DF20056BD20 /* Documentation.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = Documentation.docc; sourceTree = "<group>"; };
 		C7A7DB682AAD4C8D0029DCBA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C7A7DB6A2AAD4C8D0029DCBA /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		C7A7DB6B2AAD4C8D0029DCBA /* iOS.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = iOS.entitlements; sourceTree = "<group>"; };
@@ -39,6 +41,7 @@
 			isa = PBXGroup;
 			children = (
 				C785D7D82ABFF78A002DFB31 /* TCAWorkshop-Info.plist */,
+				C79309162ABA7DF20056BD20 /* Documentation.docc */,
 				C7A7DB672AAD4C8D0029DCBA /* iOS */,
 				C78D31AE2AAD484800EE9727 /* TCAWorkshop */,
 				C76268ED2AAD4420008D03E7 /* Products */,
@@ -153,6 +156,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C79309172ABA7DF20056BD20 /* Documentation.docc in Sources */,
 				C7A7DB6F2AAD4C8D0029DCBA /* App.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -195,6 +199,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DOCC_HOSTING_BASE_PATH = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -257,6 +262,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DOCC_HOSTING_BASE_PATH = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -285,6 +291,8 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"iOS/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				DOCC_HOSTING_BASE_PATH = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "TCAWorkshop-Info.plist";
@@ -322,6 +330,8 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"iOS/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				DOCC_HOSTING_BASE_PATH = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "TCAWorkshop-Info.plist";

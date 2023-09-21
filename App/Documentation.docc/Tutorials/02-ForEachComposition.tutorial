@@ -1,0 +1,157 @@
+@Tutorial(time: 30) {
+  @Intro(title: "Composition 機能によるドメインの細分化") {
+    TCA は Composable という単語が含まれている通り、機能を分解して結合 (Composition) することを容易に実現できます。  
+    TCA における Composition の実現方法を理解することは、TCA を使いこなす上で非常に重要になってきます。
+    
+    このチュートリアルでは、前に作成した `RepositoryListView` のリファクタリングを通して、Composition の一端に触れていきます。
+  }
+  
+  @Section(title: "RowReducer の実装") {
+    @ContentAndMedia {
+      今はリポジトリ一覧画面に対して、一つの `RepositoryList` という Reducer が用意されている状態ですが、この Reducer をまず分解します。  
+      具体的には、「一覧画面全体を管理する `RepositoryList` Reducer」と複数の「一覧画面の各 Row を管理する `RepositoryRow` Reducer」に分解していきます。  
+      いきなり一気に分解しようとしても混乱してしまうので、分解の前準備として `RepositoryRow` Reducer を実装していきましょう。
+    }
+    @Steps {
+      @Step {
+        それでは Reducer を分解するために、`RepositoryRowView.swift` というファイルで作業していきます。  
+        今回、`RepositoryListView` における一つ一つの Row を管理する Reducer を作成するため、`RepositoryRow` という命名で Reducer を定義します。  
+        この Reducer に必要な import と簡単な定義も行っておきます。
+        
+        @Code(name: "RepositoryRowView.swift", file: 02-01-code-0001)
+      }
+      @Step {
+        Reducer の実装のうち、`State` の実装から進めていきます。  
+        それぞれの Row では、リポジトリの情報を表示する必要があるため、`Repository` が必要となります。  
+        API 通信の結果、取得できたリポジトリ一つ一つが Row に渡されていくこととなるため、`var` ではなく `let` で定義しておきます。
+        
+        @Code(name: "RepositoryRowView.swift", file: 02-01-code-0002)
+      }
+      @Step {
+        次に `State` を `Identifiable` にしておきます。  
+        TCA の都合上、一つ一つの Row を表現する `State` を `Identifiable` にするのですが、その詳細については List のリファクタリング時に説明した方がわかりやすいため、一旦「`Identifiable` にしておけば良いんだな」程度に捉えておいてください。
+        
+        @Code(name: "RepositoryRowView.swift", file: 02-01-code-0003)
+      }
+      @Step {
+        次に `RepositoryRowView` がタップされたというだけのシンプルな Action を定義しておきます。
+        
+        @Code(name: "RepositoryRowView.swift", file: 02-01-code-0004)
+      }
+      @Step {
+        最後に `body` の実装も簡単に済ませます。  
+        先ほど `rowTapped` という Action を定義しましたが、現時点では特にハンドリングしないため、`Effect.none` を返しておきます。
+        
+        @Code(name: "RepositoryRowView.swift", file: 02-01-code-0005)
+      }
+    }
+  }
+  
+  @Section(title: "RowView の実装") {
+    @ContentAndMedia {
+      Reducer 分解の前準備ができたので、次は View 分解の前準備に取り組んでいきましょう。  
+      現時点では `RepositoryListView` という View がありますが、List の Row 一つ一つに対応する `RepositoryRowView` を実装します。
+
+    }
+    @Steps {
+      @Step {
+        まずは Reducer を View で使うための骨組みだけ作ります。  
+        手順は `RepositoryListView` の時と同じで、特に新しいことはありません。
+        
+        @Code(name: "RepositoryRowView.swift", file: 02-02-code-0001)
+      }
+      @Step {
+        次に、View の中身を実装します。  
+        と言っても、`RepositoryListView` の `ForEach` の中にあった View をそのままコピーして、少し修正するくらいの作業です。  
+        まずは、コピーしてペーストしておきましょう。
+        
+        @Code(name: "RepositoryRowView.swift", file: 02-02-code-0002)
+      }
+      @Step {
+        ペーストした内容ではコンパイルできない状態となっているため、適宜 `viewStore` を利用するように修正します。  
+        また、`RepositoryListView` の時点では実装していなかった、`Button` の `action` で `rowTapped` Action を送るようにもしておきましょう。
+        
+        @Code(name: "RepositoryRowView.swift", file: 02-02-code-0003)
+      }
+      @Step {
+        `RepositoryRowView` を簡単に確認できるように Previews も追加しましょう。  
+        `Repository` については、`Repository.swift` に `mock(id:)` という mock 用の static function を用意してあるため、それを利用して適当な情報を表示しておきます。
+        
+        @Code(name: "RepositoryRowView.swift", file: 02-02-code-0004) {
+          @Image(source: "02-02-image-0004.png", alt: "RepositoryRowView を Preview している図")
+        }
+      }
+    }
+  }
+
+  @Section(title: "RepositoryList Reducer の Composition") {
+    @ContentAndMedia {
+      Row のための Reducer と View の準備が終わったので、TCA の Composition 機能を使って Reducer と View を List に組み込んでいきましょう。  
+      まずは、`RepositoryRow` Reducer を `RepositoryList` Reducer に組み込んでいきます。  
+      その際に、`IdentifiedArray` と `Reducer.forEach` という新しい API に触れることになります。
+
+    }
+    @Steps {
+      @Step {
+        `RepositoryRow` Reducer を `RepositoryList` Reducer に組み込んでいくためには、`State`, `Action`, `body` に対して、少し定型的な実装を行う必要があります。  
+        少しずつ理解するために `State` の実装から進めていきます。  
+        TCA では、List Reducer が各 Row Reducer の集合を保持するような構造を表現する時に `IdentifiedArray` という API を基本的に利用します。    
+        ここでは詳しくは説明できませんが、この API は `Identifiable` な Element に特化したものとなっており、SwiftUI や他の部分でも Array を扱いやすくしてくれたり、TCA 内部でもその仕組みが利用されていたりします。  
+        この API は、ほぼ Array のように利用できるため、既存の `repositories` という変数を削除しつつ、`IdentifiedArray` を利用して `RepositoryRow.State` を保持するようなコードを追加しておきましょう。
+
+        @Code(name: "RepositoryListView.swift", file: 02-03-code-0001, previousFile: 02-03-code-0001-previous)
+        
+        > `IdentifiedArray` は TCA 作者の Point-Free が作っている swift-identified-collections という別のライブラリの API です。  
+        > Point-Free はライブラリを最小の機能単位で細かく公開している傾向があり (関数型的な思想なのかもしれません)、TCA はそれらのライブラリのいくつかに依存している構成となっています。  
+        > TCA に依存することで、多くのライブラリに依存することは少し不安に思えるかもしれませんが、それぞれのライブラリの良さや Point-Free の思想を理解できてくると、少し不安が薄れるかもしれません。
+      }
+      @Step {
+        次は `Action` の実装を行います。  
+        `Action` には `RepositoryRow.State.ID` と `RepositoryRow.Action` を associated value として持った case を追加します。  
+        `ID` は Swift における `Identifiable` protocol が `associatedtype` として定義してるため、利用できるものになっており、複数の Row から一つの Row を特定するために必要となっています。
+
+        @Code(name: "RepositoryListView.swift", file: 02-03-code-0002)
+      }
+      @Step {
+        最後に `body` の実装を行います。  
+        `repositories` の代入を行っていた部分で `repositoryRows` に代入するように変更しつつ、新たに追加した `repositoryRow` Action のハンドリングも行なっておきます。(ここでは `Effect.none` を返すだけ)  
+        また TCA には、複数のドメインを一つ一つ Composition する今回のようなケースのための機能として、`Reducer.forEach` という function が用意されています。  
+        この `forEach` には、今までに定義してきた Row 用の `State` や `Action` を引数に指定しつつ、クロージャに対して `RepositoryRow` Reducer を提供することで利用できます。  
+        `forEach` を `Reduce` に接続することで、`RepositoryRow` Reducer 内の処理を `RepositoryList` Reducer 内で動作させることができるようになります。
+
+        @Code(name: "RepositoryListView.swift", file: 02-03-code-0003)
+      }
+    }
+  }
+
+  @Section(title: "RepositoryListView の Composition") {
+    @ContentAndMedia {
+      次は View を組み込んでいきましょう。  
+      各 `RepositoryRowView` を `RepositoryListView` で利用するためには、TCA に用意されている `ForEachStore` という View が利用できます。  
+      実際に使いながら学んでいきましょう。
+    }
+
+    @Steps {
+      @Step {
+        先ほど、`RepositoryListView` のコードのうち、`ForEach` の内側にあった View 群は `RepositoryRowView` にコピーしていました。  
+        そのため、コピーした `Button` の部分を `RepositoryListView` から削除しておきましょう。
+
+        @Code(name: "RepositoryListView.swift", file: 02-04-code-0001, previousFile: 02-04-code-0001-previous)
+      }
+      @Step {
+        それでは、`RepositoryListView` に `RepositoryRowView` を組み込みます。  
+        現在 SwiftUI の `ForEach` を利用して、`viewStore.repositories` をループさせ、`repository` ごとに必要な View を描画させるようなコードとなっています。  
+        しかし、先ほど `RepositoryList` Reducer に `RepositoryRow` Reducer を組み込んだため、TCA に用意されている `ForEachStore` という API を `ForEach` の代わりに利用することで、Row ごとに `StoreOf<RepositoryRow>` を提供できるようになります。
+
+        @Code(name: "RepositoryListView.swift", file: 02-04-code-0002)
+      }
+      @Step {
+        ここまで実装すれば、リファクタリング前の挙動と同じアプリが起動できるはずです。  
+        実際に起動して確かめてみましょう！
+        
+        @Image(source: "02-04-image-0003.gif", alt: "リファクタリング後の RepositoryList を起動している図")
+      }
+      次はリポジトリ一覧画面にリポジトリを検索するための機能を追加していきましょう。
+    }
+  }
+}

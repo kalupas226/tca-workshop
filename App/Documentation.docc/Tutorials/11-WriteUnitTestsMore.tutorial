@@ -1,0 +1,10 @@
+@Article(time: 30) {
+  @Intro(title: "This is article") {
+    hoge
+  }
+  @Section(title: "This is section") {
+    @ContentAndMedia {
+      Say!
+    }
+  }
+}
