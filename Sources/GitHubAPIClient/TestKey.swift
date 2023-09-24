@@ -1,4 +1,5 @@
-import ComposableArchitecture
+import Dependencies
+import XCTestDynamicOverlay
 
 extension DependencyValues {
   public var gitHubAPIClient: GitHubAPIClient {

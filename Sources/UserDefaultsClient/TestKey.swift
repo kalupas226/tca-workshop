@@ -1,5 +1,6 @@
 import Dependencies
 import Foundation
+import XCTestDynamicOverlay
 
 extension DependencyValues {
   public var userDefaultsClient: UserDefaultsClient {

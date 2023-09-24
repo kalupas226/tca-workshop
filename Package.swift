@@ -12,7 +12,9 @@ let package = Package(
     .library(name: "FavoriteRepositoryListFeature", targets: ["FavoriteRepositoryListFeature"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.2.0")
+    .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.2.0"),
+    .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.0.0"),
+    .package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay", from: "1.0.2"),
   ],
   targets: [
     .target(
@@ -33,7 +35,8 @@ let package = Package(
     .target(
       name: "BuildConfig",
       dependencies: [
-        .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+        .product(name: "Dependencies", package: "swift-dependencies"),
+        .product(name: "XCTestDynamicOverlay", package: "xctest-dynamic-overlay"),
       ]
     ),
     .target(
@@ -93,14 +96,16 @@ let package = Package(
       dependencies: [
         "BuildConfig",
         "Entity",
-        .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+        .product(name: "Dependencies", package: "swift-dependencies"),
+        .product(name: "XCTestDynamicOverlay", package: "xctest-dynamic-overlay"),
       ]
     ),
     .target(
       name: "UserDefaultsClient",
       dependencies: [
         "Entity",
-        .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+        .product(name: "Dependencies", package: "swift-dependencies"),
+        .product(name: "XCTestDynamicOverlay", package: "xctest-dynamic-overlay"),
       ]
     ),
   ]
