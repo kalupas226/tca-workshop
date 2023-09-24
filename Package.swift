@@ -31,6 +31,12 @@ let package = Package(
       ]
     ),
     .target(
+      name: "BuildConfig",
+      dependencies: [
+        .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+      ]
+    ),
+    .target(
       name: "Entity"
     ),
     .target(
@@ -85,6 +91,7 @@ let package = Package(
     .target(
       name: "GitHubAPIClient",
       dependencies: [
+        "BuildConfig",
         "Entity",
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
       ]
