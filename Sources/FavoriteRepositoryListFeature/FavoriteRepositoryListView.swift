@@ -1,5 +1,7 @@
 import ComposableArchitecture
+import Dependencies
 import Entity
+import IdentifiedCollections
 import RepositoryDetailFeature
 import SwiftUI
 import UserDefaultsClient

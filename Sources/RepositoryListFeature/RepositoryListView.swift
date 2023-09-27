@@ -1,6 +1,8 @@
 import ComposableArchitecture
+import Dependencies
 import Entity
 import GitHubAPIClient
+import IdentifiedCollections
 import RepositoryDetailFeature
 import SwiftUI
 
