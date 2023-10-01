@@ -29,8 +29,8 @@ public struct RepositoryList: Reducer {
     public enum Alert: Equatable {}
   }
 
-  @Dependency(\.continuousClock) var clock
   @Dependency(\.gitHubAPIClient) var gitHubAPIClient
+  @Dependency(\.mainQueue) var mainQueue
   
   public init() {}
 
@@ -80,11 +80,13 @@ public struct RepositoryList: Reducer {
         return .none
       case .binding(\.$query):
         return .run { send in
-          try await withTaskCancellation(id: CancelID.response, cancelInFlight: true) {
-            try await clock.sleep(for: .seconds(0.3))
-            await send(.queryChangeDebounced)
-          }
+          await send(.queryChangeDebounced)
         }
+        .debounce(
+          id: CancelID.response,
+          for: .seconds(0.3),
+          scheduler: mainQueue
+        )
       case .queryChangeDebounced:
         guard !state.query.isEmpty else {
           return .none

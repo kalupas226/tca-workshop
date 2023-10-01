@@ -56,21 +56,21 @@ final class RepositoryListFeatureTests: XCTestCase {
     let response: [Repository] = (1...10).map {
       .mock(id: $0)
     }
-    let testClock = TestClock()
+    let testScheduler = DispatchQueue.test
 
     let store = TestStore(
       initialState: RepositoryList.State()
     ) {
       RepositoryList()
     } withDependencies: {
-      $0.continuousClock = testClock
       $0.gitHubAPIClient.searchRepositories = { _ in response }
+      $0.mainQueue = testScheduler.eraseToAnyScheduler()
     }
 
     await store.send(.binding(.set(\.$query, "test"))) {
       $0.query = "test"
     }
-    await testClock.advance(by: .seconds(0.3))
+    await testScheduler.advance(by: .seconds(0.3))
     await store.receive(.queryChangeDebounced) {
       $0.isLoading = true
     }
