@@ -69,7 +69,7 @@ public struct RepositoryList: Reducer {
           state.alert = .networkError
           return .none
         }
-      case let .repositoryRows(id: _, action: .delegate(.openRepositoryDetail(repository))):
+      case let .repositoryRows(id: _, action: .delegate(.rowTapped(repository))):
         state.path.append(
           .repositoryDetail(
             .init(repository: repository)

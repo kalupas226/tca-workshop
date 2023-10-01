@@ -45,7 +45,7 @@ public struct FavoriteRepositoryList: Reducer {
           )
         }
         return .none
-      case let .repositoryRow(id: _, action: .delegate(.openRepositoryDetail(repository))):
+      case let .repositoryRow(id: _, action: .delegate(.rowTapped(repository))):
         state.path.append(
           .repositoryDetail(
             .init(repository: repository)
