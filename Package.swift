@@ -50,6 +50,7 @@ let package = Package(
         "GitHubAPIClient",
         "RepositoryDetailFeature",
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+        .product(name: "IdentifiedCollections", package: "swift-identified-collections"),
       ]
     ),
     .testTarget(
@@ -83,6 +84,7 @@ let package = Package(
         "RepositoryDetailFeature",
         "UserDefaultsClient",
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+        .product(name: "IdentifiedCollections", package: "swift-identified-collections"),
       ]
     ),
     .testTarget(
