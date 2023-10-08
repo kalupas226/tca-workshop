@@ -5,6 +5,7 @@ import GitHubAPIClient
 import IdentifiedCollections
 import RepositoryDetailFeature
 import SwiftUI
+import SwiftUINavigationCore
 
 public struct RepositoryList: Reducer {
   public struct State: Equatable {
@@ -163,7 +164,7 @@ public struct RepositoryListView: View {
               ForEachStore(
                 store.scope(
                   state: \.repositoryRows,
-                  action: RepositoryList.Action.repositoryRows(id:action:)
+                  action: { .repositoryRows(id: $0, action: $1) }
                 ),
                 content: RepositoryRowView.init(store:)
               )

@@ -40,7 +40,7 @@ public struct AppView: View {
       RepositoryListView(
         store: store.scope(
           state: \.repositoryList,
-          action: App.Action.repositoryList
+          action: { .repositoryList($0) }
         )
       )
       .tabItem {
@@ -49,7 +49,7 @@ public struct AppView: View {
       FavoriteRepositoryListView(
         store: store.scope(
           state: \.favoriteRepositoryList,
-          action: App.Action.favoriteRepositoryList
+          action: { .favoriteRepositoryList($0) }
         )
       )
       .tabItem {

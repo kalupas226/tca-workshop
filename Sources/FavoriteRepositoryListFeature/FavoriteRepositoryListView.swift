@@ -102,7 +102,7 @@ public struct FavoriteRepositoryListView: View {
           ForEachStore(
             store.scope(
               state: \.repositoryRows,
-              action: FavoriteRepositoryList.Action.repositoryRow(id:action:)
+              action: { .repositoryRow(id: $0, action: $1) }
             ),
             content: RepositoryRowView.init(store:)
           )
