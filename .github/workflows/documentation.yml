@@ -32,7 +32,7 @@ jobs:
                       --target Docs \
                       --output-path ./docs \
                       --transform-for-static-hosting \
-                      --hosting-base-path TCAWorkshop
+                      --hosting-base-path /tca-workshop
             - name: Upload Pages artifact
               uses: actions/upload-pages-artifact@v2
               with:
