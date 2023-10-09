@@ -17,7 +17,7 @@
         TCA のテストサポート機能は `@MainActor` の context で動作することを前提とするため、class 自体も `@MainActor` にしておく必要があります。  
         また、テストサポート機能では、async な API も利用することになるため、テスト用の function は async function として定義します。
 
-        @Code(name: "RepositoryListFeatureTests.swift", file: 05-01-code-0001)
+        @Code(name: "RepositoryListFeatureTests.swift", file: 05-01-code-0001.swift)
       }
       @Step {
         少しずつテストを実装していきます。  
@@ -25,7 +25,7 @@
         実際のアプリでは、Reducer を駆動させるランタイムとして `Store` が利用されますが、テスト用のランタイムとして `TestStore` が用意されているため、テストではそれを利用できます。  
         `TestStore` は `Store` と同じく、`initialState` と Reducer を提供することで initialize できるため、実装してみましょう。
 
-        @Code(name: "RepositoryListFeatureTests.swift", file: 05-01-code-0002)
+        @Code(name: "RepositoryListFeatureTests.swift", file: 05-01-code-0002.swift)
       }
       @Step {
         `TestStore` には、テストを書きやすくしてくれるいくつかの API が存在しているため、それを利用してテストを書いていきます。   
@@ -33,7 +33,7 @@
         それでは、まずは `TestStore` の `send` function を使って、`onAppear` Action が送られた時の動作をテストします。  
         `send` は Action を提供しつつ、その Action によって起きる State の変更を closure に提供するという形でテストできるようになっています。
         
-        @Code(name: "RepositoryListFeatureTests.swift", file: 05-01-code-0003)
+        @Code(name: "RepositoryListFeatureTests.swift", file: 05-01-code-0003.swift)
       }
       @Step {
         この状態でテストを実行してみると、テストが失敗してしまいます。  
@@ -48,7 +48,7 @@
         それでは、先に「Unimplemented」で失敗している原因となっている、`GitHubAPIClient` の実装をテスト用に上書きしていきましょう。  
         Preview の実装時に `withDependencies` を使って依存関係を上書きしましたが、`TestStore` でも同じことができるため、同じように適当な mock で依存関係を上書きしてみましょう。
 
-        @Code(name: "RepositoryListFeatureTests.swift", file: 05-01-code-0005)
+        @Code(name: "RepositoryListFeatureTests.swift", file: 05-01-code-0005.swift)
       }
       @Step {
         この状態でテストを実行してみましょう。  
@@ -62,7 +62,7 @@
         記述方法はほとんど `send` と同様なので書いてみましょう。  
         この状態でテストを実行すれば、無事テストが成功するはずです！
 
-        @Code(name: "RepositoryListFeatureTests.swift", file: 05-01-code-0007)
+        @Code(name: "RepositoryListFeatureTests.swift", file: 05-01-code-0007.swift)
       }
     }
   }
@@ -77,13 +77,13 @@
         リポジトリ検索機能のテストを書いていくために `testQueryChanged` という新しい function を作成します。  
         リポジトリ検索でも API 通信は行われるため、先ほどと同じように `GitHubAPIClient` の実装を mock しつつ、`TestStore` を作成しましょう。
 
-        @Code(name: "RepositoryListFeatureTests.swift", file: 05-02-code-0001, previousFile: 05-01-code-0007)
+        @Code(name: "RepositoryListFeatureTests.swift", file: 05-02-code-0001.swift, previousFile: 05-01-code-0007.swift)
       }
       @Step {
         リポジトリ検索を模倣するためには `@BindingState` として表現されている `query` に対して文字列を格納する必要があります。  
         `BindingAction` には、この用途でも利用できる `set(_:_:)` が用意されているため、これを利用してリポジトリ検索の挙動を模倣しましょう。
         
-        @Code(name: "RepositoryListFeatureTests.swift", file: 05-02-code-0002)
+        @Code(name: "RepositoryListFeatureTests.swift", file: 05-02-code-0002.swift)
       }
       `query` に文字列が入力されると Reducer の実装によって、0.3 秒以内に次の入力がなければ API 通信が始まります。  
       そのため、現状のテストコードでテストを実行するとテストに失敗するはずです。
@@ -95,14 +95,14 @@
         現在は、`DispatchQueue.main` を指定して 0.3 秒の `debounce` を表現していますが、`DispatchQueue.main` を直接指定してしまっているために、テストで依存を制御できない状態となっています。  
         swift-dependencies には、このために利用できる `@Dependency(\.mainQueue)` が用意されているため、これを利用するように変更しましょう。
         
-        @Code(name: "RepositoryListView.swift", file: 05-02-code-0003, previousFile: 05-02-code-0003-previous)
+        @Code(name: "RepositoryListView.swift", file: 05-02-code-0003.swift, previousFile: 05-02-code-0003-previous.swift)
       }
       @Step {
         実装を修正できたので、テストコードに戻って修正していきます。  
         実装の方で `@Dependency(\.mainQueue)` を利用するようになったため、この `mainQueue` の依存関係をテスト上では上書きすることができます。  
         `mainQueue` のテスト用の依存関係は `CombineSchedulers` というライブラリに `DispatchQueue.test` として用意されているため、それを利用して依存関係を上書きしておきましょう。
 
-        @Code(name: "RepositoryListFeatureTests.swift", file: 05-02-code-0004, previousFile: 05-02-code-0002)
+        @Code(name: "RepositoryListFeatureTests.swift", file: 05-02-code-0004.swift, previousFile: 05-02-code-0002.swift)
         
         > [`CombineSchedulers`](https://github.com/pointfreeco/combine-schedulers) も Point-Free のライブラリで、Combine に利用される `Scheduler` をテスタブルにしたり、より便利にできるようなものとなっています。詳しくは、ライブラリの README 等を参照してください。
       }
@@ -110,7 +110,7 @@
         `DispatchQueue.test` は `testScheduler.advance(by:)` という形で、テスト上の時間を任意の秒数進めることができます。  
         そのため、これを利用して検索機能の `debounce` に指定されている 0.3 秒を進めつつ、それによって発火することになる Action や State の変更を適切に Assert してテストが成功する状態にしましょう。
         
-        @Code(name: "RepositoryListFeatureTests.swift", file: 05-02-code-0005)
+        @Code(name: "RepositoryListFeatureTests.swift", file: 05-02-code-0005.swift)
         
         > `testScheduler.advance(by:)` で進めることができる時間についてですが、これは実際のテスト上の時間を消費しないように設計されています。  
         > 例えば、`XCTWaiter.wait(for:)` などを利用して、任意の秒数待つようにすることでもテストの時間を進めることはできますが、これを利用すると実際のテスト上の時間を消費してしまう上に、テストを不安定にさせてしまう可能性があります。  

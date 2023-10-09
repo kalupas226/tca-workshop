@@ -17,20 +17,20 @@
         検索機能を実現するために、後ほど SwiftUI の `searchable` API を利用しますが、その API は `text` という引数に `Binding<String>` な型を要求します。  
         TCA には Binding value を表現するための API である `@BindingState` Property Wrapper が用意されているため、これを利用して `searchable` に提供するための状態を追加します。
         
-        @Code(name: "RepositoryListView.swift", file: 03-01-code-0001, previousFile: 03-01-code-0001-previous)
+        @Code(name: "RepositoryListView.swift", file: 03-01-code-0001.swift, previousFile: 03-01-code-0001-previous.swift)
       }
       @Step {
         次に TCA において Binding を表現するために必要となる新しい Action も追加します。  
         Action においては、`BindableAction` と `BindingAction` という API を利用します。  
         `BindableAction` は `Action` に準拠させるための protocol として機能し、`BindableAction` protocol に準拠するためには `binding(BindingAction<State>)` という case を追加する必要があるため、それらを追加しましょう。
         
-        @Code(name: "RepositoryListView.swift", file: 03-01-code-0002)
+        @Code(name: "RepositoryListView.swift", file: 03-01-code-0002.swift)
       }
       @Step {
         最後に TCA における Binding の処理を実行する核である、`BindingReducer` を `body` に組み込む必要があります。  
         この API は `body` に組み込むだけで、先ほど追加した `@BindingState`, `BindingAction` が機能するように作られています。
         
-        @Code(name: "RepositoryListView.swift", file: 03-01-code-0003)
+        @Code(name: "RepositoryListView.swift", file: 03-01-code-0003.swift)
       }
     }
   }
@@ -46,12 +46,12 @@
         `ViewStore` 経由で `@BindingState` の projectedValue を利用する subscript が用意されており、`viewStore.$value` のようにすると `Binding<Value>` が取得できるようになっているため、それを利用します。  
         ついでに `navigationTitle` もつけておきましょう。
 
-        @Code(name: "RepositoryListView.swift", file: 03-02-code-0001, previousFile: 03-02-code-0001-previous)
+        @Code(name: "RepositoryListView.swift", file: 03-02-code-0001.swift, previousFile: 03-02-code-0001-previous.swift)
       }
       @Step {
         `navigationTitle` と `searchable` は `NavigationStack` 配下で機能する API であるため、`NavigationStack` で囲っておきましょう。
 
-        @Code(name: "RepositoryListView.swift", file: 03-02-code-0002)
+        @Code(name: "RepositoryListView.swift", file: 03-02-code-0002.swift)
       }
     }
   }
@@ -66,13 +66,13 @@
         現在、`searchable` の `text` には `@BindingState` の `viewStore.$query` というものを指定していますが、この `query` が変更された時に API リクエストしなければいけません。  
         TCA の Binding 系の API には、`@BindingState` の変更タイミングに介入するための方法が用意されているため、Reducer にその処理を追加してみましょう。
 
-        @Code(name: "RepositoryListView.swift", file: 03-03-code-0001, previousFile: 03-01-code-0003)
+        @Code(name: "RepositoryListView.swift", file: 03-03-code-0001.swift, previousFile: 03-01-code-0003.swift)
       }
       @Step {
         `query` が変更された時には search エンドポイントに対してリクエストする必要がありますが、`onAppear` のタイミングで既に API リクエストしているため、その処理を使い回します。  
         ほぼ共通の処理になるため function に処理を切り出しつつ、それを利用するようにしてみましょう。
         
-        @Code(name: "RepositoryListView.swift", file: 03-03-code-0002)
+        @Code(name: "RepositoryListView.swift", file: 03-03-code-0002.swift)
         
         > TCA で共通処理を切り出す際は、Action を増やすのではなく、今回のように function を作ってそこにまとめるようにしましょう。  
         > TCA において Action を send する行為は、決してコストが低いものではなく、Action を send しなくても良いようにできるのであればそれがベターです。  
@@ -86,7 +86,7 @@
         `debounce` には `Hashable` な `id` が必要となるため、そのための enum を用意しています。  
         また、`debounce` の挙動を実現するために、一つ Action を追加しています。
         
-        @Code(name: "RepositoryListView.swift", file: 03-03-code-0003)
+        @Code(name: "RepositoryListView.swift", file: 03-03-code-0003.swift)
 
         >  `Effect.debounce` は内部的には `Effect.cancellable` という API を利用しており、これによって指定の秒数内に複数の処理が実行された場合に、古いものはキャンセルするという実装によって、debounce の挙動を実現しています。
       }

@@ -18,31 +18,31 @@
         今回、`RepositoryListView` における一つ一つの Row を管理する Reducer を作成するため、`RepositoryRow` という命名で Reducer を定義します。  
         この Reducer に必要な import と簡単な定義も行っておきます。
         
-        @Code(name: "RepositoryRowView.swift", file: 02-01-code-0001)
+        @Code(name: "RepositoryRowView.swift", file: 02-01-code-0001.swift)
       }
       @Step {
         Reducer の実装のうち、`State` の実装から進めていきます。  
         それぞれの Row では、リポジトリの情報を表示する必要があるため、`Repository` が必要となります。  
         API 通信の結果、取得できたリポジトリ一つ一つが Row に渡されていくこととなるため、`var` ではなく `let` で定義しておきます。
         
-        @Code(name: "RepositoryRowView.swift", file: 02-01-code-0002)
+        @Code(name: "RepositoryRowView.swift", file: 02-01-code-0002.swift)
       }
       @Step {
         次に `State` を `Identifiable` にしておきます。  
         TCA の都合上、一つ一つの Row を表現する `State` を `Identifiable` にするのですが、その詳細については List のリファクタリング時に説明した方がわかりやすいため、一旦「`Identifiable` にしておけば良いんだな」程度に捉えておいてください。
         
-        @Code(name: "RepositoryRowView.swift", file: 02-01-code-0003)
+        @Code(name: "RepositoryRowView.swift", file: 02-01-code-0003.swift)
       }
       @Step {
         次に `RepositoryRowView` がタップされたというだけのシンプルな Action を定義しておきます。
         
-        @Code(name: "RepositoryRowView.swift", file: 02-01-code-0004)
+        @Code(name: "RepositoryRowView.swift", file: 02-01-code-0004.swift)
       }
       @Step {
         最後に `body` の実装も簡単に済ませます。  
         先ほど `rowTapped` という Action を定義しましたが、現時点では特にハンドリングしないため、`Effect.none` を返しておきます。
         
-        @Code(name: "RepositoryRowView.swift", file: 02-01-code-0005)
+        @Code(name: "RepositoryRowView.swift", file: 02-01-code-0005.swift)
       }
     }
   }
@@ -58,26 +58,26 @@
         まずは Reducer を View で使うための骨組みだけ作ります。  
         手順は `RepositoryListView` の時と同じで、特に新しいことはありません。
         
-        @Code(name: "RepositoryRowView.swift", file: 02-02-code-0001)
+        @Code(name: "RepositoryRowView.swift", file: 02-02-code-0001.swift)
       }
       @Step {
         次に、View の中身を実装します。  
         と言っても、`RepositoryListView` の `ForEach` の中にあった View をそのままコピーして、少し修正するくらいの作業です。  
         まずは、コピーしてペーストしておきましょう。
         
-        @Code(name: "RepositoryRowView.swift", file: 02-02-code-0002)
+        @Code(name: "RepositoryRowView.swift", file: 02-02-code-0002.swift)
       }
       @Step {
         ペーストした内容ではコンパイルできない状態となっているため、適宜 `viewStore` を利用するように修正します。  
         また、`RepositoryListView` の時点では実装していなかった、`Button` の `action` で `rowTapped` Action を送るようにもしておきましょう。
         
-        @Code(name: "RepositoryRowView.swift", file: 02-02-code-0003)
+        @Code(name: "RepositoryRowView.swift", file: 02-02-code-0003.swift)
       }
       @Step {
         `RepositoryRowView` を簡単に確認できるように Previews も追加しましょう。  
         `Repository` については、`Repository.swift` に `mock(id:)` という mock 用の static function を用意してあるため、それを利用して適当な情報を表示しておきます。
         
-        @Code(name: "RepositoryRowView.swift", file: 02-02-code-0004) {
+        @Code(name: "RepositoryRowView.swift", file: 02-02-code-0004.swift) {
           @Image(source: "02-02-image-0004.png", alt: "RepositoryRowView を Preview している図")
         }
       }
@@ -99,7 +99,7 @@
         ここでは詳しくは説明できませんが、この API は `Identifiable` な Element に特化したものとなっており、SwiftUI や他の部分でも Array を扱いやすくしてくれたり、TCA 内部でもその仕組みが利用されていたりします。  
         この API は、ほぼ Array のように利用できるため、既存の `repositories` という変数を削除しつつ、`IdentifiedArray` を利用して `RepositoryRow.State` を保持するようなコードを追加しておきましょう。
 
-        @Code(name: "RepositoryListView.swift", file: 02-03-code-0001, previousFile: 02-03-code-0001-previous)
+        @Code(name: "RepositoryListView.swift", file: 02-03-code-0001.swift, previousFile: 02-03-code-0001-previous.swift)
         
         > `IdentifiedArray` は TCA 作者の Point-Free が作っている swift-identified-collections という別のライブラリの API です。  
         > Point-Free はライブラリを最小の機能単位で細かく公開している傾向があり (関数型的な思想なのかもしれません)、TCA はそれらのライブラリのいくつかに依存している構成となっています。  
@@ -110,7 +110,7 @@
         `Action` には `RepositoryRow.State.ID` と `RepositoryRow.Action` を associated value として持った case を追加します。  
         `ID` は Swift における `Identifiable` protocol が `associatedtype` として定義してるため、利用できるものになっており、複数の Row から一つの Row を特定するために必要となっています。
 
-        @Code(name: "RepositoryListView.swift", file: 02-03-code-0002)
+        @Code(name: "RepositoryListView.swift", file: 02-03-code-0002.swift)
       }
       @Step {
         最後に `body` の実装を行います。  
@@ -119,7 +119,7 @@
         この `forEach` には、今までに定義してきた Row 用の `State` や `Action` を引数に指定しつつ、クロージャに対して `RepositoryRow` Reducer を提供することで利用できます。  
         `forEach` を `Reduce` に接続することで、`RepositoryRow` Reducer 内の処理を `RepositoryList` Reducer 内で動作させることができるようになります。
 
-        @Code(name: "RepositoryListView.swift", file: 02-03-code-0003)
+        @Code(name: "RepositoryListView.swift", file: 02-03-code-0003.swift)
       }
     }
   }
@@ -136,14 +136,14 @@
         先ほど、`RepositoryListView` のコードのうち、`ForEach` の内側にあった View 群は `RepositoryRowView` にコピーしていました。  
         そのため、コピーした `Button` の部分を `RepositoryListView` から削除しておきましょう。
 
-        @Code(name: "RepositoryListView.swift", file: 02-04-code-0001, previousFile: 02-04-code-0001-previous)
+        @Code(name: "RepositoryListView.swift", file: 02-04-code-0001.swift, previousFile: 02-04-code-0001-previous.swift)
       }
       @Step {
         それでは、`RepositoryListView` に `RepositoryRowView` を組み込みます。  
         現在 SwiftUI の `ForEach` を利用して、`viewStore.repositories` をループさせ、`repository` ごとに必要な View を描画させるようなコードとなっています。  
         しかし、先ほど `RepositoryList` Reducer に `RepositoryRow` Reducer を組み込んだため、TCA に用意されている `ForEachStore` という API を `ForEach` の代わりに利用することで、Row ごとに `StoreOf<RepositoryRow>` を提供できるようになります。
 
-        @Code(name: "RepositoryListView.swift", file: 02-04-code-0002)
+        @Code(name: "RepositoryListView.swift", file: 02-04-code-0002.swift)
       }
       @Step {
         ここまで実装すれば、リファクタリング前の挙動と同じアプリが起動できるはずです。  

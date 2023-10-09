@@ -17,7 +17,7 @@
         まず、TCA に用意されている `Reducer` protocol に準拠した構造体を作成します。  
         TCA に用意されている API を利用するための `ComposableArchitecture` と、この後利用することになる `Foundation` および `Repository` という構造体を利用するための `Entity` module の import も行っておきます。
 
-        @Code(name: "RepositoryListView.swift", file: 01-01-code-0001)
+        @Code(name: "RepositoryListView.swift", file: 01-01-code-0001.swift)
       }
       @Step {
         `Reducer` protocol の準拠に必要となる要素の一つである `State` を実装します。  
@@ -26,21 +26,21 @@
         この後、「画面表示時に GitHub API Request を行い、そのレスポンスを受け取ってリポジトリ一覧を表示する」という挙動の実装を行います。  
         そのため、「リポジトリ一覧を保持するための状態」と「API Request 中であることを判定するための状態」を `State` で保持するようにします。
 
-        @Code(name: "RepositoryListView.swift", file: 01-01-code-0002)
+        @Code(name: "RepositoryListView.swift", file: 01-01-code-0002.swift)
       }
       @Step {
         次に `Reducer` protocol の準拠に必要となるもう一つの要素である `Action` を実装します。  
         `Action` には、ユーザーが起こしたタップイベントや、画面表示されたという SwiftUI のライフサイクルによるイベント、API Request の結果を受け取った際のイベントなど、様々なイベントを定義します。その性質上、`Action` は enum で定義することが一般的です。  
         今回の画面では、「画面が表示された」という Action をまず定義しておきましょう。
 
-        @Code(name: "RepositoryListView.swift", file: 01-01-code-0003)
+        @Code(name: "RepositoryListView.swift", file: 01-01-code-0003.swift)
       }
       @Step {
         次は `Action` に「GitHub API Request の結果を受け取った」という Action を定義します。  
         この Action は、API Request の成功・失敗結果を受け取る必要があります。このように Action に対して何らかの値を渡したい場合、enum の associated value として表現できます。  
         また、成功・失敗結果であるため素直に実装しようとすれば Swift の `Result` 型を利用すると良さそうですが、`Result` は `Equatable` ではないため、TCA に代替 API として用意されている `TaskResult` を使って表現します。
         
-        @Code(name: "RepositoryListView.swift", file: 01-01-code-0004)
+        @Code(name: "RepositoryListView.swift", file: 01-01-code-0004.swift)
 
         > `searchRepositoriesResponse` という Action 名になっているのは、リポジトリ一覧画面の表示時に GitHub API の search エンドポイントを叩く事情があるためです。  
       }
@@ -51,7 +51,7 @@
         画面表示のタイミングで GitHub API に対して Request を行うため、手始めに Request 前に `isLoading` の状態をロード中 (`true`) にするという処理を書いてみましょう。  
         この時点では、外の世界で実行したい処理は特にないため、それを表現する `Effect.none` を返却します。
 
-        @Code(name: "RepositoryListView.swift", file: 01-01-code-0005)
+        @Code(name: "RepositoryListView.swift", file: 01-01-code-0005.swift)
 
         > `body` の型となっている `ReducerOf<Self>` は `Reducer<Self.State, Self.Action>` という型の typealias となっています。
         > TCA では `XXXOf<YYY>` のような typealias がいくつか出てくるため、それを頭に入れておくとコードが少し読みやすくなるかもしれません。
@@ -67,7 +67,7 @@
         ここでの `TaskResult` 内の処理は少し長くなっていますが、GitHub API の search エンドポイントに対してリクエストしているだけです。  
         後ほど、処理のリファクタリングは行います。
         
-        @Code(name: "RepositoryListView.swift", file: 01-01-code-0006)
+        @Code(name: "RepositoryListView.swift", file: 01-01-code-0006.swift)
         
         > `Bundle.main.infoDictionary` 経由で、事前に設定してもらった Personal Access Token を取得しています。
       }
@@ -75,7 +75,7 @@
         最後に、API Request の結果を受け取るために定義していた Action で、先ほどの API Request の結果を処理します。  
         `TaskResult` は Swift の `Result` と同じように扱えるため、`success` case と `failure` case をハンドリングできます。  
         成功時にはレスポンスが返却されているので、それを `state.repositories` に格納し、失敗時は後ほど処理するため、一旦 TODO コメントを書いておきます。
-        @Code(name: "RepositoryListView.swift", file: 01-01-code-0007)
+        @Code(name: "RepositoryListView.swift", file: 01-01-code-0007.swift)
       }
 
       以上で基本的な Reducer の実装は一旦終わりです。  
@@ -94,7 +94,7 @@
         View のコードは Reducer を実装したファイルと同じファイルに実装していきます。  
         まずは View を作っていくために `SwiftUI` を import しつつ、`RepositoryListView` という名前の struct を追加します。
         
-        @Code(name: "RepositoryListView.swift", file: 01-02-code-0001)
+        @Code(name: "RepositoryListView.swift", file: 01-02-code-0001.swift)
         
         > ここでは、View のコードを Reducer と同じファイルに置いていますが、プロジェクトによっては、別のファイルにすることを好む場所もあります。  
         > 個人的には同じファイルにしておくと、すぐに Reducer・View の実装を確認できて便利なのでそうしています。(Point-Free の好みとしても、同じファイルにするという話が公式チュートリアルで述べられていました)
@@ -104,7 +104,7 @@
         `Store` は機能におけるランタイムとしての責務を担っており、先ほど定義した `Reducer` の実装に則って `State` を更新するために `Action` を処理したり、`Effect` を実行してくれたりしています。  
         `Store` を View で利用するために、View に property として `Store` を追加します。
         
-        @Code(name: "RepositoryListView.swift", file: 01-02-code-0002)
+        @Code(name: "RepositoryListView.swift", file: 01-02-code-0002.swift)
         
         > `Store` 自体が View で監視される必要はないため、`Store` は `let` で定義できます。
         > 
@@ -114,7 +114,7 @@
         View では `Store` は基本的にそのまま利用せずに、TCA に用意されている `WithViewStore` という API を経由して扱うことになります。  
         View で `Store` における `State` の変更を監視するためには `WithViewStore` を利用することで得られる `ViewStore` という API を利用します。  
 
-        @Code(name: "RepositoryListView.swift", file: 01-02-code-0003)
+        @Code(name: "RepositoryListView.swift", file: 01-02-code-0003.swift)
         
         > 現状は `WithViewStore` の `observe` ですべての状態を監視していますが、必要な状態だけを監視するようにすることもできます。  
         > 気になる方は、TCA の [Performance](https://pointfreeco.github.io/swift-composable-architecture/main/documentation/composablearchitecture/performance) という記事を読んでみてください。
@@ -123,7 +123,7 @@
         `WithViewStore` によって得られた `ViewStore` を使えば、State を `viewStore.xxx` という形で取得したり、`viewStore.send(.yyy)` という形で Action を送ることができるようになります。  
         実際にこれらの API  を使って、Action に定義した `onAppear` を画面表示時に発火させるコードと、ロード状態を使って `ProgressView` を表示するコードを追加します。
 
-        @Code(name: "RepositoryListView.swift", file: 01-02-code-0004)
+        @Code(name: "RepositoryListView.swift", file: 01-02-code-0004.swift)
 
         > `State` は `viewStore.state.xxx` という形で取得することもできますが、TCA 内部で KeyPath Member Lookup による `subscript` が実装されているため `viewStore.xxx` とすることができています。  
         > 基本的には冗長ではない `state` が省略された方を利用するのがおすすめです。
@@ -133,7 +133,7 @@
         List 内の View を包んでいる `Button` の `action` は空ですが、後ほど実装します。  
         また、View のコードが長くなってきたため、リファクタリングしても良さそうですが、それについては後ほど対応していきます。
         
-        @Code(name: "RepositoryListView.swift", file: 01-02-code-0005)
+        @Code(name: "RepositoryListView.swift", file: 01-02-code-0005.swift)
       }
       実装した Reducer を無事 View に繋ぎ込むことができました。  
       次は、アプリを実際に起動して確認するために、今作成した `RepositoryListView` を SwiftUI App のエントリポイントに繋ぎ込んでいきましょう。
@@ -158,7 +158,7 @@
         (`withDependencies` については後ほど説明します。)    
         必要な値で initialize すれば、実際の API Request が発生する Previews が表示されます。
 
-        @Code(name: "RepositoryListView.swift", file: 01-03-code-0001, previousFile: 01-02-code-0005) {
+        @Code(name: "RepositoryListView.swift", file: 01-03-code-0001.swift, previousFile: 01-02-code-0005.swift) {
           @Image(source: "01-03-image-0001", alt: "Xcode Previews で RepositoryListView を表示している図")
         }
       }
@@ -178,13 +178,13 @@
       @Step {
         次に `iOS/App.swift` 内で、先ほど追加した `RepositoryListFeature` と `SwiftUI` を import しておきます。
         
-        @Code(name: "App.swift", file: 01-03-code-0004)
+        @Code(name: "App.swift", file: 01-03-code-0004.swift)
       }
       @Step {
         最後に `WindowGroup` の中で `RepositoryListView` を initialize します。  
         initialize の手順は Xcode Previews の時と同じです。
 
-        @Code(name: "App.swift", file: 01-03-code-0005)
+        @Code(name: "App.swift", file: 01-03-code-0005.swift)
       }
       @Step {
         実際に Xcode でアプリを起動してみましょう。  
