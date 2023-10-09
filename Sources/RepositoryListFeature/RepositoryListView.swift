@@ -12,7 +12,7 @@ public struct RepositoryList: Reducer {
     var repositoryRows: IdentifiedArrayOf<RepositoryRow.State> = []
     var isLoading: Bool = false
     @BindingState var query: String = ""
-    @PresentationState var alert: AlertState<Action.Alert>?
+    @PresentationState var destination: Destination.State?
     var path = StackState<Path.State>()
 
     public init() {}
@@ -24,7 +24,7 @@ public struct RepositoryList: Reducer {
     case searchRepositoriesResponse(TaskResult<[Repository]>)
     case repositoryRows(id: RepositoryRow.State.ID, action: RepositoryRow.Action)
     case binding(BindingAction<State>)
-    case alert(PresentationAction<Alert>)
+    case destination(PresentationAction<Destination.Action>)
     case path(StackAction<Path.State, Path.Action>)
 
     public enum Alert: Equatable {}
@@ -67,10 +67,13 @@ public struct RepositoryList: Reducer {
           )
           return .none
         case .failure:
-          state.alert = .networkError
+          state.destination = .alert(.networkError)
           return .none
         }
-      case let .repositoryRows(id: _, action: .delegate(.rowTapped(repository))):
+      case let .repositoryRows(id, .delegate(.rowTapped)):
+        guard let repository = state.repositoryRows[id: id]?.repository
+        else { return .none }
+
         state.path.append(
           .repositoryDetail(
             .init(repository: repository)
@@ -104,7 +107,7 @@ public struct RepositoryList: Reducer {
             )
           )
         }
-      case .binding, .alert, .path:
+      case .binding, .destination, .path:
         return .none
       }
     }
@@ -113,6 +116,27 @@ public struct RepositoryList: Reducer {
     }
     .forEach(\.path, action: /Action.path) {
       Path()
+    }
+    .ifLet(\.$destination, action: /Action.destination) {
+      Destination()
+    }
+  }
+}
+
+extension RepositoryList {
+  public struct Destination: Reducer {
+    public enum State: Equatable {
+      case alert(AlertState<Action.Alert>)
+    }
+
+    public enum Action: Equatable {
+      case alert(Alert)
+      
+      public enum Alert: Equatable {}
+    }
+    
+    public var body: some ReducerOf<Self> {
+      EmptyReducer()
     }
   }
 
@@ -133,7 +157,7 @@ public struct RepositoryList: Reducer {
   }
 }
 
-extension AlertState where Action == RepositoryList.Action.Alert {
+extension AlertState where Action == RepositoryList.Destination.Action.Alert {
   static let networkError = Self {
     TextState("Network Error")
   } message: {
@@ -177,9 +201,11 @@ public struct RepositoryListView: View {
         .navigationTitle("Search Repositories")
         .alert(
           store: store.scope(
-            state: \.$alert,
-            action: { .alert($0) }
-          )
+            state: \.$destination,
+            action: { .destination($0) }
+          ),
+          state: /RepositoryList.Destination.State.alert,
+          action: RepositoryList.Destination.Action.alert
         )
         .searchable(
           text: viewStore.$query,

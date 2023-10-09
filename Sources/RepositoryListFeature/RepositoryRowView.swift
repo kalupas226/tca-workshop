@@ -14,7 +14,7 @@ public struct RepositoryRow: Reducer {
     case delegate(Delegate)
 
     public enum Delegate: Equatable {
-      case rowTapped(Repository)
+      case rowTapped
     }
   }
 
@@ -22,7 +22,7 @@ public struct RepositoryRow: Reducer {
     Reduce<State, Action> { state, action in
       switch action {
       case .rowTapped:
-        return .send(.delegate(.rowTapped(state.repository)))
+        return .send(.delegate(.rowTapped))
       case .delegate:
         return .none
       }

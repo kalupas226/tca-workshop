@@ -48,7 +48,7 @@ final class RepositoryListFeatureTests: XCTestCase {
       $0.isLoading = true
     }
     await store.receive(.searchRepositoriesResponse(.failure(TestError.search))) {
-      $0.alert = .networkError
+      $0.destination = .alert(.networkError)
       $0.isLoading = false
     }
   }
@@ -98,7 +98,7 @@ final class RepositoryListFeatureTests: XCTestCase {
       RepositoryList()
     }
 
-    await store.send(.repositoryRows(id: 1, action: .delegate(.rowTapped(.mock(id: 1))))) {
+    await store.send(.repositoryRows(id: 1, action: .delegate(.rowTapped))) {
       $0.path = .init(
         [
           .repositoryDetail(.init(repository: .mock(id: 1)))
