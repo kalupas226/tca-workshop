@@ -30,9 +30,10 @@ jobs:
                       --allow-writing-to-directory ./docs \
                       generate-documentation \
                       --target Docs \
-                      --output-path ./docs \
+                      --disable-indexing \
                       --transform-for-static-hosting \
-                      --hosting-base-path /tca-workshop
+                      --hosting-base-path /tca-workshop \
+                      --output-path ./docs \
             - name: Upload Pages artifact
               uses: actions/upload-pages-artifact@v2
               with:
