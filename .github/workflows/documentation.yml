@@ -26,14 +26,13 @@ jobs:
 
             - name: Build documentation
               run: |
-                  xcodebuild docbuild -project App/TCAWorkshop.xcodeproj -scheme TCAWorkshop \
-                      CODE_SIGNING_REQUIRED=NO \
-                      CODE_SIGNING_ALLOWED=NO \
-                      -derivedDataPath /tmp/docbuild \
-                      -destination 'generic/platform=iOS';
-                  $(xcrun --find docc) process-archive \
-                      transform-for-static-hosting /tmp/docbuild/Build/Products/Debug-iphoneos/TCAWorkshop.doccarchive \
-                      --output-path docs;
+                  swift package \
+                      --allow-writing-to-directory ./docs \
+                      generate-documentation \
+                      --target Docs \
+                      --output-path ./docs \
+                      --transform-for-static-hosting \
+                      --hosting-base-path TCAWorkshop
             - name: Upload Pages artifact
               uses: actions/upload-pages-artifact@v2
               with:

@@ -33,4 +33,4 @@ PAT を用意できたら、User-Defined に追加してください。
 
 ## Workshop を始める準備が整いました
 
-準備が整ったところで、<doc:TableOfConents> を早速始めていきましょう！
+準備が整ったところで、<doc:TableOfContents> を早速始めていきましょう！

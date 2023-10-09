@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
   name: "TCAWorkshop",
-  platforms: [.iOS(.v16)],
+  platforms: [.iOS(.v16), .macOS(.v10_15)],
   products: [
     .library(name: "AppFeature", targets: ["AppFeature"]),
     .library(name: "RepositoryListFeature", targets: ["RepositoryListFeature"]),
@@ -18,6 +18,7 @@ let package = Package(
     .package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay", from: "1.0.2"),
     .package(url: "https://github.com/pointfreeco/swift-identified-collections", from: "1.0.0"),
     .package(url: "https://github.com/pointfreeco/swiftui-navigation", from: "1.0.2"),
+    .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.3.0"),
   ],
   targets: [
     .target(
@@ -41,6 +42,9 @@ let package = Package(
         .product(name: "Dependencies", package: "swift-dependencies"),
         .product(name: "XCTestDynamicOverlay", package: "xctest-dynamic-overlay"),
       ]
+    ),
+    .target(
+      name: "Docs"
     ),
     .target(
       name: "Entity"
