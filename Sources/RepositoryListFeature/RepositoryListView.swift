@@ -213,8 +213,8 @@ public struct RepositoryListView: View {
           prompt: "Input query"
         )
       }
-    } destination: {
-      switch $0 {
+    } destination: { state in
+      switch state {
       case .repositoryDetail:
         CaseLet(
           /RepositoryList.Path.State.repositoryDetail,
