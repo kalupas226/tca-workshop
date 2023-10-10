@@ -7,6 +7,7 @@ let package = Package(
   platforms: [.iOS(.v16), .macOS(.v10_15)],
   products: [
     .library(name: "AppFeature", targets: ["AppFeature"]),
+    .library(name: "Docs", targets: ["Docs"]),
     .library(name: "RepositoryListFeature", targets: ["RepositoryListFeature"]),
     .library(name: "RepositoryDetailFeature", targets: ["RepositoryDetailFeature"]),
     .library(name: "FavoriteRepositoryListFeature", targets: ["FavoriteRepositoryListFeature"]),

@@ -1,5 +1,5 @@
 @Article(time: 30) {
-  @Intro(title: "This is article") {
+  @Intro(title: "様々な Unit Test の実装") {
     hoge
   }
   @Section(title: "This is section") {

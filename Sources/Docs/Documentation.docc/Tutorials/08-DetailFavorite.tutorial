@@ -1,10 +1,9 @@
 @Article(time: 30) {
-  @Intro(title: "This is article") {
+  @Intro(title: "リポジトリ詳細画面へのお気に入り機能の実装") {
     hoge
   }
   @Section(title: "This is section") {
     @ContentAndMedia {
-      Say!
     }
   }
 }

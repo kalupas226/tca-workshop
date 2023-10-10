@@ -1,17 +1,104 @@
 @Tutorial(time: 20) {
   @Intro(title: "Stack-based navigation") {
-    リポジトリ一覧画面からリポジトリ詳細画面への画面遷移機能を追加していきましょう。
+    前のチュートリアルでは、Tree-based navigation API である `navigationDestination(store:state:action:destination)` を利用することで、リポジトリ一覧画面からリポジトリ詳細画面への Push 遷移を表現しました。  
+    しかし、iOS 16 からは `NavigationStack` API の登場により Stack-based navigation という新しい Navigation の選択肢が SwiftUI に増え、これによっても Push 遷移を表現できるようになりました。
+    
+    このチュートリアルでは、リポジトリ詳細画面への Push 遷移を Stack-based navigation に書き換えることを通して、TCA における Stack-based navigation の実装方法および Tree-based navigation・Stack-based navigation の違いについて学ぶことができます。
   }
 
-  @Section(title: "Reducer の実装") {
+  @Section(title: "Stack-based navigation API を用いた Reducer の書き換え") {
     @ContentAndMedia {
-      Reducer 実装していきましょう。
+      Stack-based navigation API を使うためには Reducer・View それぞれに実装が必要です。  
+      そのため、前回 Tree-based navigation API で表現した「リポジトリ一覧画面からリポジトリ詳細画面への Push 遷移」のための Reducer の処理を、まずは書き換えていきましょう。
+    }
+    @Steps {
+      @Step { 
+        二つの Navigation API の状態管理的な違いは、Stack-based navigation API は Collection で状態を管理することに対し、Tree-based navigation API は Optional で状態を管理するというところです。  
+        `PresentationState` は `var destination: Destination.State?` のように表現していましたが、Stack-based navigation API の場合はその表現が Collection になります。  
+        ただ、双方とも Navigation 用の Reducer を作成して、状態を管理できることに違いはないため、まずは Stack-based navigation 用の `Path` Reducer を作成しましょう。
+        
+        @Code(name: "RepositoryListView.swift", file: 07-01-code-0001.swift, previousFile: 07-01-code-0001-previous.swift)
+      }
+      @Step {
+        次に `Path` Reducer の `State`, `Action`, `body` の実装を行います。  
+        しかし、この実装に関しても Tree-based navigation API だった時と基本的には同じ実装で済ませることができるようになっているため、そのように実装しましょう。  
+        ついでに Tree-based navigation 用の `Destination` Reducer からも不要な実装を削除したり、`EmptyReducer` への置き換えを行うようにします。
+        
+        @Code(name: "RepositoryListView.swift", file: 07-01-code-0002.swift)
+      }
+      @Step {
+        次に `RepositoryList` Reducer と `Path` Reducer の繋ぎこみを行っていきます。  
+        まずは、`State` の実装を行いましょう。  
+        Stack-based navigation API においては、`StackState` というものを利用することになります。  
+        `StackState` は前述したように、Collection として実装されているため、これに `append` などの操作をすることで画面の Stack を表現できるようになっています。  
+        `StackState` は Generics を指定する必要があるため、そこに先ほど定義した `Path.State` を指定する形で実装します。
+        
+        @Code(name: "RepositoryListView.swift", file: 07-01-code-0003.swift)
+      }
+      @Step {
+        次は `Action` の実装を行います。  
+        `Action` では `StackAction` という API を利用します。  
+        `StackAction` は Generics として `State` と `Action` を満たすことを要求します。  
+        そのため、ここでも先ほど定義した `Path` の `State`, `Action` を利用して `StackAction` を持った case を定義しましょう。  
+        `StackAction` は後で実際に利用しますが、これによって Stack 上の要素と簡単にやり取りを行うことができるようになります。
+
+        @Code(name: "RepositoryListView.swift", file: 07-01-code-0004.swift)
+      }
+      @Step {
+        `body` の実装も進めていきます。  
+        まず、`Destination` から `repositoryDetail` case を取り除いたことによって発生しているコンパイルエラーを解消するために、`Destination.State` に代入していた部分で、代わりに `StackState` を利用するように修正します。  
+        先ほど軽く触れたように、`StackState` は Collection であるため、`append` を利用して要素の追加を行うことができます。  
+        このように実装すれば、`@PresentationState` 利用時と同じように、Row タップ時に Push 遷移させる挙動を実現できます。
+        
+        @Code(name: "RepositoryListView.swift", file: 07-01-code-0005.swift)
+      }
+      @Step {
+        最後に、`Path` Reducer を動作させるために、`RepositoryList` Reducer と `Path` Reducder を接続する必要があります。  
+        そのためには、`forEach(_:action:destination)` という API を利用する必要があります。  
+        この Action は `RepositoryList` Reducer と `RepositoryRow` Reducer を接続する際に利用した `forEach(_:action:element)` とは異なることに注意しましょう。  
+        ただし、使い勝手はほとんど同じなので、`StackState` への KeyPath, `StackAction` への CasePath, `Reducer` を指定することで実装できます。
+
+        @Code(name: "RepositoryListView.swift", file: 07-01-code-0006.swift)
+      }
     }
   }
   
-  @Section(title: "View の実装") {
+  @Section(title: "Stack-based navigation API を用いた View の書き換え") {
     @ContentAndMedia {
-      View も実装していきましょう。
-    }
+      Reducer の実装が完了したので、次は Stack-based navigation API への置き換えを View に対して行っていきます。  
+      具体的には Tree-based navigation API だった `navigationDestination` を Stack-based navigation API である `NavigationStackStore` に置き換えていきます。
+      }
+      @Steps {
+        @Step {
+          Tree-based navigation のための API である `navigationDestination` は Stack-based navigation に置き換えた際に不要となるため、削除しておきます。
+          
+          @Code(name: "RepositoryListView.swift", file: 07-02-code-0001.swift, previousFile: 07-02-code-0001-previous.swift)
+        }
+        @Step {
+          次に Pure SwiftUI の API である `NavigationStack(root:)` を Stack-based navigation 用の API である `NavigationStackStore(_:root:destination)` に置き換えます。  
+          この API の第一引数には、先ほど定義した `StackState`, `StackAction` を利用した `store.scope` を渡します。  
+          `root` は Pure SwiftUI に指定するものと同じで `NavigationStack` の Root 画面として表示したいもの、今で言うと List をここに渡します。  
+          最後の `destination` 引数については次に説明しますが、空の状態で実装だけしておきましょう。
+ 
+          @Code(name: "RepositoryListView.swift", file: 07-02-code-0002.swift)
+        }
+        @Step {
+          `destination` 引数についての説明を後回しにしましたが、最後にその実装を行います。  
+          `destination` は、`RepositoryList.Path.State` が提供される closure となっており、その `Path.State` を switch などで分岐させて、各 case に対応した Push 遷移先を表現できるものとなっています。  
+          現在 `Path.State` には、`repositoryDetail` しか存在していないため、`state` が `repositoryDetail` だった時に `RepositoryDetailView` を提供するようなコードを書けば良いです。  
+          その際には、TCA に用意されている `CaseLet` という API を利用して、ある case に応じた View を提供できます。
+
+          @Code(name: "RepositoryListView.swift", file: 07-02-code-0003.swift)
+        }
+        @Step {
+          ここまで実装すれば、Tree-based navigation でリポジトリ詳細画面への Push 遷移を表現していた時と同じ挙動を実現できていることが確認できると思います。  
+          実際にアプリを起動して確認してみましょう！
+          
+          @Image(source: "07-02-image-0004.gif", alt: "Stack-based navigation で Push 遷移が表現できている図")
+
+          > ここまでで TCA における Tree-based navigation と Stack-based navigation の表現方法を簡単に紹介してきましたが、詳細に紹介できたわけではないため、それぞれの詳細やどのように使い分けるべきかなどが掴みきれていないかもしれません。  
+          > TCA には今回紹介した二種類の Navigation についての詳しいドキュメントがあるため、気になる方は [Navigation](https://pointfreeco.github.io/swift-composable-architecture/main/documentation/composablearchitecture/navigation) を参照して頂けると良いと思います。
+        }
+      }
   }
 }

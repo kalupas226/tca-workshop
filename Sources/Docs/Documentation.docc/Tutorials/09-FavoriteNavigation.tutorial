@@ -1,5 +1,5 @@
 @Article(time: 30) {
-  @Intro(title: "This is article") {
+  @Intro(title: "お気に入りリポジトリ一覧画面と画面遷移の実装") {
     hoge
   }
   @Section(title: "This is section") {
