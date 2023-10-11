@@ -1,9 +1,21 @@
 @Article(time: 30) {
   @Intro(title: "リポジトリ詳細画面へのお気に入り機能の実装") {
-    hoge
+    今まで作ったリポジトリ一覧画面とリポジトリ詳細画面があるアプリに、自分の力で機能を追加していってみましょう。  
+    ここでは、リポジトリ詳細画面にリポジトリのお気に入り機能を追加することを目標とします。
   }
-  @Section(title: "This is section") {
-    @ContentAndMedia {
-    }
+  @ContentAndMedia {
+    ## 機能要件
+    
+    以下の機能を満たすアプリを作ってみましょう。
+    
+    - リポジトリ詳細画面の `Toolbar` の `topBarTrailing` の位置に heart icon がある
+      - heart icon はリポジトリをお気に入りに登録するためのボタンとして機能する
+    - heart icon の見た目は以下のようになる
+      - リポジトリがまだお気に入りに登録されていない場合: SF Symbols における `heart`
+      - リポジトリが既にお気に入りに登録されている場合: SF Symbols における `heart.fill`
+    - リポジトリがお気に入りかどうかの状態は、簡単のため UserDefaults に保存する
+    - UserDefaults からの値の取得・保存などのアクセスを管理するための `UserDefaultsClient` という struct を作成し、Reducer からそれを `@Dependency` として扱えるようにする
+    
+    @Image(source: "08-image-01.gif", alt: "リポジトリ詳細画面のお気に入り機能の図")
   }
 }

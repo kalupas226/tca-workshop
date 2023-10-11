@@ -1,10 +1,16 @@
 @Article(time: 30) {
-  @Intro(title: "お気に入りリポジトリ一覧画面と画面遷移の実装") {
-    hoge
+  @Intro(title: "お気に入りリポジトリ一覧画面と Navigation の実装") {
+    「リポジトリ詳細画面へのお気に入り機能の実装」で、リポジトリをお気に入りできる機能が追加できたと思います。  
+    しかし、現状のアプリではお気に入りしたリポジトリを一覧するための機能がないため、その機能を実装してみましょう。  
+    また、`TabView` や `NavigationStackStore` を使った Navigation 機能も実装してみましょう。
   }
-  @Section(title: "This is section") {
-    @ContentAndMedia {
-      Say!
-    }
+  @ContentAndMedia {
+    ## 機能要件
+    
+    以下の機能を満たすアプリを作ってみましょう。
+    
+    - 
+    
+    @Image(source: "08-image-01.gif", alt: "リポジトリ詳細画面のお気に入り機能の図")
   }
 }
