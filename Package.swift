@@ -12,6 +12,7 @@ let package = Package(
     .library(name: "FavoriteRepositoryListFeature", targets: ["FavoriteRepositoryListFeature"]),
   ],
   dependencies: [
+    .package(url: "https://github.com/pointfreeco/swift-case-paths", from: "1.0.0"),
     .package(url: "https://github.com/pointfreeco/combine-schedulers", from: "1.0.0"),
     .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.2.0"),
     .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.0.0"),
@@ -25,6 +26,7 @@ let package = Package(
       dependencies: [
         "FavoriteRepositoryListFeature",
         "RepositoryListFeature",
+        .product(name: "CasePaths", package: "swift-case-paths"),
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
       ]
     ),
@@ -51,6 +53,7 @@ let package = Package(
         "Entity",
         "GitHubAPIClient",
         "RepositoryDetailFeature",
+        .product(name: "CasePaths", package: "swift-case-paths"),
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
         .product(name: "IdentifiedCollections", package: "swift-identified-collections"),
       ]
@@ -87,6 +90,7 @@ let package = Package(
         "Entity",
         "RepositoryDetailFeature",
         "UserDefaultsClient",
+        .product(name: "CasePaths", package: "swift-case-paths"),
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
         .product(name: "IdentifiedCollections", package: "swift-identified-collections"),
       ]
