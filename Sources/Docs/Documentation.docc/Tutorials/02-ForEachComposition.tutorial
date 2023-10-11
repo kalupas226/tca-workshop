@@ -113,13 +113,23 @@
         @Code(name: "RepositoryListView.swift", file: 02-03-code-0002.swift)
       }
       @Step {
-        最後に `body` の実装を行います。  
-        `repositories` の代入を行っていた部分で `repositoryRows` に代入するように変更しつつ、新たに追加した `repositoryRow` Action のハンドリングも行なっておきます。(ここでは `Effect.none` を返すだけ)  
-        また TCA には、複数のドメインを一つ一つ Composition する今回のようなケースのための機能として、`Reducer.forEach` という function が用意されています。  
-        この `forEach` には、今までに定義してきた Row 用の `State` や `Action` を引数に指定しつつ、クロージャに対して `RepositoryRow` Reducer を提供することで利用できます。  
-        `forEach` を `Reduce` に接続することで、`RepositoryRow` Reducer 内の処理を `RepositoryList` Reducer 内で動作させることができるようになります。
+        次に `body` の実装を行います。  
+        `repositories` に対して値を格納していた部分で `repositoryRows` に値を格納するように変更する必要があります。  
+        また TCA では Parent Reducer が Child Reducer を管理するような構造にすることによって、Parent Reducer で Child Reducer の Action のハンドリングを行うことができるようになります。  
+        今回で言えば、`RepositoryList` Reducer で `RepositoryRow` Reducer を管理しているため、`RepositoryRow` で起きたあらゆる Action を `RepositoryList` でハンドリングできるというメリットを得ることができます。  
+        しかし、現時点においては `RepositoryRow` の Aciton を特にハンドリングしたいわけではないため、単に `Effect.none` を返すようにしておきます。
 
         @Code(name: "RepositoryListView.swift", file: 02-03-code-0003.swift)
+      }
+      @Step {
+        最後に `RepositoryList` Reducer で `RepositoryRow` Reducer を動作させるために、二つの Reducer を接続する必要があります。  
+        `RepositoryList` Reducer には複数の `RepositoryRow` Reducer が対応することとなりますが、このように複数のドメインを一つ一つ Composition する今回のようなための機能として、`Reducer.forEach` という function が用意されています。  
+        この `forEach` には、今までに定義してきた Row 用の `State` の KeyPath や `Action` の CasePath を引数に指定しつつ、クロージャに対して `RepositoryRow` Reducer を提供することで利用できます。  
+        
+        @Code(name: "RepositoryListView.swift", file: 02-03-code-0004.swift)
+        
+        > CasePath も Point-Free のライブラリです。Swift における struct では KeyPath の機能を利用し、様々な機能を解放できていますが、enum においても同じようなことを実現できるようにするために開発されたのが、このライブラリとなっています。  
+        > 詳細については、[ライブラリのリポジトリ](https://github.com/pointfreeco/swift-case-paths)等を参照してください。
       }
     }
   }

@@ -69,9 +69,6 @@ public struct RepositoryList: Reducer {
         return .none
       }
     }
-    .forEach(\.repositoryRows, action: /Action.repositoryRow(id:action:)) {
-      RepositoryRow()
-    }
   }
 
   private let jsonDecoder: JSONDecoder = {
