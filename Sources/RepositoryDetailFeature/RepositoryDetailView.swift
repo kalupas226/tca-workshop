@@ -9,7 +9,6 @@ public struct RepositoryDetail: Reducer {
   public struct State: Equatable {
     let repository: Repository
 
-    var isFavoriteRepository = false
     @BindingState var isWebViewLoading = true
 
     public init(repository: Repository) {
@@ -18,37 +17,15 @@ public struct RepositoryDetail: Reducer {
   }
   
   public enum Action: Equatable, BindableAction {
-    case onAppear
-    case favoriteButtonTapped
     case binding(BindingAction<State>)
   }
 
   public init() {}
 
-  @Dependency(\.userDefaultsClient) var userDefaultsClient
-
   public var body: some ReducerOf<Self> {
     BindingReducer()
     Reduce { state, action in
       switch action {
-      case .onAppear:
-        let repositories = userDefaultsClient.getFavoriteRepositories()
-        if repositories.contains(where: { $0.id == state.repository.id }) {
-          state.isFavoriteRepository = true
-        }
-        return .none
-      case .favoriteButtonTapped:
-        if state.isFavoriteRepository {
-          userDefaultsClient.deleteFavoriteRepository(
-            state.repository.id
-          )
-        } else {
-          userDefaultsClient.addFavoriteRepository(
-            state.repository
-          )
-        }
-        state.isFavoriteRepository.toggle()
-        return .none
       case .binding:
         return .none
       }
@@ -74,24 +51,7 @@ public struct RepositoryDetailView: View {
           ProgressView()
         }
       }
-      .onAppear {
-        viewStore.send(.onAppear)
-      }
       .navigationBarTitleDisplayMode(.inline)
-      .toolbar {
-        ToolbarItem(placement: .topBarTrailing) {
-          Button {
-            viewStore.send(.favoriteButtonTapped)
-          } label: {
-            if viewStore.isFavoriteRepository {
-              Image(systemName: "heart.fill")
-            } else {
-              Image(systemName: "heart")
-            }
-          }
-          .disabled(viewStore.isWebViewLoading)
-        }
-      }
     }
   }
 }

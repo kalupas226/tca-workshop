@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C762691C2AAD49F8008D03E7 /* AppFeature in Frameworks */ = {isa = PBXBuildFile; productRef = C762691B2AAD49F8008D03E7 /* AppFeature */; };
 		C7A7DB6D2AAD4C8D0029DCBA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C7A7DB682AAD4C8D0029DCBA /* Assets.xcassets */; };
 		C7A7DB6E2AAD4C8D0029DCBA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C7A7DB6A2AAD4C8D0029DCBA /* Preview Assets.xcassets */; };
 		C7A7DB6F2AAD4C8D0029DCBA /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A7DB6C2AAD4C8D0029DCBA /* App.swift */; };
@@ -28,7 +27,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C762691C2AAD49F8008D03E7 /* AppFeature in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -97,7 +95,6 @@
 			);
 			name = TCAWorkshop;
 			packageProductDependencies = (
-				C762691B2AAD49F8008D03E7 /* AppFeature */,
 			);
 			productName = TCAWorkshop;
 			productReference = C76268EC2AAD4420008D03E7 /* TCAWorkshop.app */;
@@ -378,13 +375,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		C762691B2AAD49F8008D03E7 /* AppFeature */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = AppFeature;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = C76268E42AAD4420008D03E7 /* Project object */;
 }
