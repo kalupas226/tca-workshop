@@ -3,7 +3,7 @@
     リポジトリ一覧画面の実装が一通り終わりましたが、普段の開発効率を高めるために、もう少しリポジトリ一覧画面を改善できます。  
     具体的には、アプリの開発効率を高めてくれる Xcode Previews のための改善を行っていきます。
 
-    このチュートリアルでは、リポジトリ一覧画面の Xcode Previews の動作を改善することを通して、依存関係の制御方法および依存関係を制御することによって実現できる Xcode Previews 利用のテクニックを学ぶことができます。
+    このチュートリアルでは、リポジトリ一覧画面の Xcode Previews の動作を改善することを通して、TCA における依存関係の制御方法および依存関係を制御することによって実現できる Xcode Previews 利用時のテクニックを学ぶことができます。
   }
 
   @Section(title: "swift-dependencies による依存関係の制御") {
@@ -15,19 +15,19 @@
     @Steps {
       @Step {
         リポジトリ一覧画面における依存関係は、GitHub API の search エンドポイントに対してリクエストしている部分となります。  
-        この依存関係は、現在実際に通信が発生する API リクエストを行っていますが、これを制御可能にすることによって、Previews ではリクエストせずに mock のデータを即時に返すということができるようになります。  
+        この依存関係は、現在実際に通信が発生する API リクエストを行っていますが、これを制御可能にすることによって、Previews では実際のリクエストを行わずに mock のデータを即時に返すということができるようになります。  
         そのため、まずはこの依存関係を制御するための interface を `GitHubAPIClient` という名前で作成しましょう。  
         この Client は `String` を受け取って `[Repository]` を返却する非同期な interface を持っているという構造になっています。  
         
         @Code(name: "Client.swift", file: 04-01-code-0001.swift)
         
-        > interface というと Swift では protocol で定義する方法が広く知られていますが、Point-Free は struct の property で interface を定義することを推奨しています。  
+        > interface というと Swift では protocol で定義する方法が広く知られていますが、Point-Free は struct の property で interface を表現することを推奨しています。  
         > struct で interface を定義しておくと、後ほど紹介する swift-dependencies と親和性が高いコードにすることもできます。
         >
         > この辺りの話についての詳細が気になる方は [swift-dependencies のドキュメント](https://pointfreeco.github.io/swift-dependencies/main/documentation/dependencies/designingdependencies) を参照してください。
       }
       @Step {
-        次に、TCA で依存関係を便利に扱うための仕組みである swift-dependencies を利用していきます。  
+        次に、TCA で依存関係を便利に扱うことができる swift-dependencies を利用していきます。  
         まず、swift-dependencies を利用するために `Dependencies` を import する必要があります。  
         そして、swift-dependencies の `DependencyKey` という protocol に Client を準拠させるために、`liveValue` を定義します。  
         `liveValue` の型は `DependencyKey` に準拠させた `GitHubAPIClient` 自身となっており、`liveValue` には実際にアプリで利用される機能を定義することになります。  
@@ -37,7 +37,7 @@
         
         > swift-dependencies は Point-Free 製の依存関係を管理するためのライブラリです。  
         > TCA では、この swift-dependencies を利用して依存関係を制御することが推奨されます。  
-        > 今回の Workshop では詳しく説明できないため、気になる方は[ドキュメント](https://pointfreeco.github.io/swift-dependencies/main/documentation/dependencies)を参照してください。
+        > 今回の Workshop では詳しく説明できないため、気になる方は[ドキュメント](https://pointfreeco.github.io/swift-dependencies/main/documentation/dependencies)等を参照してください。
       }
       @Step {
         swift-dependencies には `DependencyKey` の他に、Xcode Previews とテストのために依存関係を提供する Key として機能する `TestDependencyKey` という protocol があります。  
@@ -58,13 +58,13 @@
 
         @Code(name: "Client.swift", file: 04-01-code-0004.swift)
         
-        > xctest-dynamic-overlay の詳細について気になる方は、例の如く[ドキュメント](https://github.com/pointfreeco/xctest-dynamic-overlay)を参照してください。
-        
+        > xctest-dynamic-overlay の詳細について気になる方は、[リポジトリ](https://github.com/pointfreeco/xctest-dynamic-overlay)等を参照してください。
+        > 
         > ここまででは `DependencyKey` と `TestDependencyKey` に Client を準拠させてきましたが、実は `DependencyKey` は `TestDependencyKey` に準拠しているため、`DependencyKey` にだけ準拠させるようにしても問題ないです。  
         > ただ、実装部分を明確に区切ることができたり、意識して使えばモジュール分離の観点でメリットがあるため、基本的には今回のように別々に準拠させておくと楽になると思います。
       }
       @Step {
-        最後に swift-dependencies を活用するために、`DependencyValues` という struct の extension として、`gitHubAPIClient` property を定義します。  
+        最後に swift-dependencies を活用するために、`DependencyValues` という型の extension として、`gitHubAPIClient` property を定義します。  
         ここまでの手順を終えることによって、各モジュールの Reducer からは `@Dependency(\.gitHubAPIClient)` という形で依存関係が利用できるようになります。
         
         @Code(name: "Client.swift", file: 04-01-code-0005.swift)
@@ -83,13 +83,13 @@
         それでは先ほど定義した `GitHubAPIClient` を実際に Reducer で使ってみましょう。  
         先ほど少しだけ説明しましたが、Reducer では `@Dependency` という Property Wrapper を通してこの依存関係を利用できます。  
         この `@Dependency` を利用するために `Dependencies` を import します。  
-        また、`GitHubAPIClient` の `liveValue` を実装した際に、Reducer の `searchRepositories(by:)` 内にある `TaskResult` の中身はカットしているはずなので、そこで代わりに `GitHubAPIClient` を利用するように書き換えましょう。
+        また、`GitHubAPIClient` の `liveValue` を実装した際に、Reducer の `searchRepositories(by:)` 内にある `TaskResult` の中身はカットしているはずなので、その部分で代わりに `GitHubAPIClient` を利用するように書き換えましょう。
 
         @Code(name: "RepositoryListView.swift", file: 04-02-code-0001.swift, previousFile: 04-02-code-0001-previous.swift)
       }
       @Step {
         Reducer での実装は終わったので、最後に Xcode Previews のコードに少し手を加えていきましょう。  
-        実は `Store` の initializer には `withDependencies` という、`DependencyValues` を設定するための引数が存在しています。  
+        実は `Store` の initializer には `withDependencies` という、`DependencyValues` を上書きするための引数が存在しています。  
         これを利用することで、「Previews では `GitHubAPIClient` を mock 実装で返す」ように `GitHubAPIClient` Dependency の実装を書き換えることができます。  
         実際に、事前にプロジェクトに用意されている `Repository.mock(id:)` を利用して、`gitHubAPIClient.searchRepositories` で mock を返すようにして、Previews の動作を確認してみましょう。  
         `ProgressView` の変化も Preview で見れると捗りそうなので、`Task.sleep(for:)` を使って適当な秒数 sleep させます。
@@ -98,6 +98,8 @@
           @Image(source: "04-02-image-0002.gif", alt: "withDependencies を利用した View を Preview している図")
         }
       }
+      このように swift-dependencies を利用してアプリの依存関係を制御することで、実際のアプリで動作する依存関係と Xcode Previews で動作する依存関係を簡単に切り替えることができます。  
+      依存関係の制御はテストにおいても重要となってくるため、次はそれについて学んでいきましょう。
     }
   }
 }
