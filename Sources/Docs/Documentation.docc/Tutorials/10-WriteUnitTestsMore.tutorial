@@ -1,6 +1,6 @@
 @Article(time: 30) {
   @Intro(title: "様々な Unit Test の実装") {
-    最後は TCA の強みである Testability をもっと理解するために、様々な Unit Test を自分の力で実装してみましょう。
+    最後は TCA の強みである Testability をさらに理解するために、様々な Unit Test を自分の力で実装してみましょう。
   }
   @ContentAndMedia {
     ## テストの実装
