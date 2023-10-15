@@ -1,4 +1,3 @@
-import RepositoryListFeature
 import SwiftUI
 
 @main
