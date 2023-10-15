@@ -19,6 +19,16 @@ Workshop を進めるためには Xcode が必要です。
 
 上記が満たされていることを確認しましょう。
 
+### リポジトリのクローン
+
+Workshop を進めるための下準備が済んであるリポジトリを用意してあります。  
+まずは以下の URL からリポジトリをクローンして、Xcode で `App/TCAWorkshop.xcodeproj` を開いてみましょう。
+
+[](https://github.com/kalupas226/tca-workshop.git)
+
+このリポジトリには Workshop を進める際に利用する `main` branch と Workshop 完了後のコード例が含まれている `complete` branch が存在します。  
+complete branch を見てしまうとネタバレになってしまい面白くないと思うので、Workshop が終わるまでは見ないようにしてください。
+
 ### GitHub の Personal Access Token の準備
 
 Workshop では、GitHub の API を利用することになります。  

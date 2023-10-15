@@ -1,7 +1,7 @@
 @Tutorials(name: "TCA Workshop") {
   @Intro(title: "TCA Workshop") {
-    実践的なアプリ開発を通して The Composable Architecture を学びましょう。
-    <!--        @Image(source: <#file#>, alt: "<#accessible description#>")-->
+    The Composable Architecture (TCA) は、State management・Composition・Side effects・Testing・Ergonomics を強みとした、一貫性のある理解しやすい方法でアプリを開発できるライブラリです。  
+    この Workshop で、実践的なアプリ開発を通して The Composable Architecture を学んでいきましょう。
   }
 
   @Chapter(name: "TCA の基本要素") {
@@ -14,7 +14,7 @@
     @TutorialReference(tutorial: "doc:03-BindingsAndCancellation")
   }
   
-  @Chapter(name: "依存関係の制御と Preiviews・Unit Tests") {
+  @Chapter(name: "依存関係の制御と Xcode Preiviews・Unit Tests") {
     TCA における依存関係の制御方法を学びましょう。  
     また、依存関係を制御して Xcode Previews と Unit Tests をより効率的に作成する方法も学びましょう。
 
@@ -42,5 +42,9 @@
     @TutorialReference(tutorial: "doc:08-DetailFavorite")
     @TutorialReference(tutorial: "doc:09-FavoriteNavigation")
     @TutorialReference(tutorial: "doc:10-WriteUnitTestsMore")
+  }
+
+  @Resources {
+    
   }
 }
