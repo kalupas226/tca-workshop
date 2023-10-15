@@ -8,22 +8,22 @@
   
   @Section(title: "RowReducer の実装") {
     @ContentAndMedia {
-      今はリポジトリ一覧画面に対して、一つの `RepositoryList` という Reducer が用意されている状態ですが、この Reducer をまず分解します。  
+      今はリポジトリ一覧画面に対して、`RepositoryList` という一つの Reducer が用意されている状態ですが、この Reducer をまず分解します。  
       具体的には、「一覧画面全体を管理する `RepositoryList` Reducer」と複数の「一覧画面の各 Row を管理する `RepositoryRow` Reducer」に分解していきます。  
       いきなり一気に分解しようとしても混乱してしまうので、分解の前準備として `RepositoryRow` Reducer を実装していきましょう。
     }
     @Steps {
       @Step {
-        それでは Reducer を分解するために、`RepositoryRowView.swift` というファイルで作業していきます。  
-        今回、`RepositoryListView` における一つ一つの Row を管理する Reducer を作成するため、`RepositoryRow` という命名で Reducer を定義します。  
+        それでは Reducer を分解するために、`RepositoryRowView.swift` というファイルを `RepositoryListFeature` directory に作成して作業していきます。  
+        `RepositoryListView` における一つ一つの Row を管理する Reducer を作成するため、`RepositoryRow` という命名で Reducer を定義します。  
         この Reducer に必要な import と簡単な定義も行っておきます。
-        
+
         @Code(name: "RepositoryRowView.swift", file: 02-01-code-0001.swift)
       }
       @Step {
         Reducer の実装のうち、`State` の実装から進めていきます。  
         それぞれの Row では、リポジトリの情報を表示する必要があるため、`Repository` が必要となります。  
-        API 通信の結果、取得できたリポジトリ一つ一つが Row に渡されていくこととなるため、`var` ではなく `let` で定義しておきます。
+        API 通信の結果、取得できたリポジトリ一つ一つが Row に渡されていくこととなり変更されるわけではないため、`let` で定義しておきます。
         
         @Code(name: "RepositoryRowView.swift", file: 02-01-code-0002.swift)
       }
@@ -34,12 +34,12 @@
         @Code(name: "RepositoryRowView.swift", file: 02-01-code-0003.swift)
       }
       @Step {
-        次に `RepositoryRowView` がタップされたというだけのシンプルな Action を定義しておきます。
+        次に `RepositoryRowView` がタップされたということを表現するためのシンプルな Action を定義します。
         
         @Code(name: "RepositoryRowView.swift", file: 02-01-code-0004.swift)
       }
       @Step {
-        最後に `body` の実装も簡単に済ませます。  
+        最後に `body` の実装も簡単に行います。  
         先ほど `rowTapped` という Action を定義しましたが、現時点では特にハンドリングしないため、`Effect.none` を返しておきます。
         
         @Code(name: "RepositoryRowView.swift", file: 02-01-code-0005.swift)
@@ -95,28 +95,28 @@
       @Step {
         `RepositoryRow` Reducer を `RepositoryList` Reducer に組み込んでいくためには、`State`, `Action`, `body` に対して、少し定型的な実装を行う必要があります。  
         少しずつ理解するために `State` の実装から進めていきます。  
-        TCA では、List Reducer が各 Row Reducer の集合を保持するような構造を表現する時に `IdentifiedArray` という API を基本的に利用します。    
-        ここでは詳しくは説明できませんが、この API は `Identifiable` な Element に特化したものとなっており、SwiftUI や他の部分でも Array を扱いやすくしてくれたり、TCA 内部でもその仕組みが利用されていたりします。  
+        TCA では、List Reducer が各 Row Reducer の集合を保持するような構造を表現する時に `IdentifiedArray` という API を利用します。    
+        ここでは詳しくは説明できませんが、この API は `Identifiable` な要素に特化したものとなっており、SwiftUI や他の部分でも Array を扱いやすくしてくれたり、TCA 内部でもその仕組みが利用されています。  
         この API は、ほぼ Array のように利用できるため、既存の `repositories` という変数を削除しつつ、`IdentifiedArray` を利用して `RepositoryRow.State` を保持するようなコードを追加しておきましょう。
 
         @Code(name: "RepositoryListView.swift", file: 02-03-code-0001.swift, previousFile: 02-03-code-0001-previous.swift)
         
         > `IdentifiedArray` は TCA 作者の Point-Free が作っている swift-identified-collections という別のライブラリの API です。  
-        > Point-Free はライブラリを最小の機能単位で細かく公開している傾向があり (関数型的な思想なのかもしれません)、TCA はそれらのライブラリのいくつかに依存している構成となっています。  
-        > TCA に依存することで、多くのライブラリに依存することは少し不安に思えるかもしれませんが、それぞれのライブラリの良さや Point-Free の思想を理解できてくると、少し不安が薄れるかもしれません。
+        > Point-Free はライブラリを最小の機能単位で細かく公開している傾向があり、TCA はそれらのライブラリのいくつかに依存している構成となっています。  
+        > TCA に依存することで、多くのライブラリに依存しなければいけないことは少し不安に思えるかもしれませんが、それぞれのライブラリの良さや Point-Free の思想を理解できてくると不安が薄れると思います。
       }
       @Step {
         次は `Action` の実装を行います。  
         `Action` には `RepositoryRow.State.ID` と `RepositoryRow.Action` を associated value として持った case を追加します。  
-        `ID` は Swift における `Identifiable` protocol が `associatedtype` として定義してるため、利用できるものになっており、複数の Row から一つの Row を特定するために必要となっています。
+        `ID` は Swift における `Identifiable` protocol が `associatedtype` として定義しているため利用できるものになっており、複数の Row から一つの Row を特定するために必要となっています。
 
         @Code(name: "RepositoryListView.swift", file: 02-03-code-0002.swift)
       }
       @Step {
         次に `body` の実装を行います。  
-        `repositories` に対して値を格納していた部分で `repositoryRows` に値を格納するように変更する必要があります。  
-        また TCA では Parent Reducer が Child Reducer を管理するような構造にすることによって、Parent Reducer で Child Reducer の Action のハンドリングを行うことができるようになります。  
-        今回で言えば、`RepositoryList` Reducer で `RepositoryRow` Reducer を管理しているため、`RepositoryRow` で起きたあらゆる Action を `RepositoryList` でハンドリングできるというメリットを得ることができます。  
+        `repositories` に値を格納していた部分で `repositoryRows` に値を格納するように変更する必要があります。  
+        また TCA では Parent Reducer が Child Reducer を管理するような構造にすることによって、Parent Reducer で Child Reducer の Action のハンドリングができるようになります。  
+        今回で言えば、`RepositoryList` Reducer で `RepositoryRow` Reducer を管理するため、`RepositoryRow` で起きたあらゆる Action を `RepositoryList` で簡単にハンドリングできるというメリットを得ることができます。  
         しかし、現時点においては `RepositoryRow` の Aciton を特にハンドリングしたいわけではないため、単に `Effect.none` を返すようにしておきます。
 
         @Code(name: "RepositoryListView.swift", file: 02-03-code-0003.swift)
@@ -128,7 +128,8 @@
         
         @Code(name: "RepositoryListView.swift", file: 02-03-code-0004.swift)
         
-        > CasePath も Point-Free のライブラリです。Swift における struct では KeyPath の機能を利用し、様々な機能を解放できていますが、enum においても同じようなことを実現できるようにするために開発されたのが、このライブラリとなっています。  
+        > CasePath も Point-Free のライブラリです。Swift における struct では KeyPath の機能を利用し様々な機能を解放できていますが、enum においても同じようなことを実現できるようにするために開発されたのが、このライブラリとなっています。  
+        > CasePath は KeyPath と似たようなシンタックスで `/` operator を使って利用できます。  
         > 詳細については、[ライブラリのリポジトリ](https://github.com/pointfreeco/swift-case-paths)等を参照してください。
       }
     }
@@ -151,7 +152,7 @@
       @Step {
         それでは、`RepositoryListView` に `RepositoryRowView` を組み込みます。  
         現在 SwiftUI の `ForEach` を利用して、`viewStore.repositories` をループさせ、`repository` ごとに必要な View を描画させるようなコードとなっています。  
-        しかし、先ほど `RepositoryList` Reducer に `RepositoryRow` Reducer を組み込んだため、TCA に用意されている `ForEachStore` という API を `ForEach` の代わりに利用することで、Row ごとに `StoreOf<RepositoryRow>` を提供できるようになります。
+        先ほど `RepositoryList` Reducer に `RepositoryRow` Reducer を組み込んだため、TCA に用意されている `ForEachStore` という API を `ForEach` の代わりに利用することで、Row ごとに `StoreOf<RepositoryRow>` を提供し、View の Composition も実現できます。
 
         @Code(name: "RepositoryListView.swift", file: 02-04-code-0002.swift)
       }
@@ -161,7 +162,6 @@
         
         @Image(source: "02-04-image-0003.gif", alt: "リファクタリング後の RepositoryList を起動している図")
       }
-      次はリポジトリ一覧画面にリポジトリを検索するための機能を追加していきましょう。
     }
   }
 }
