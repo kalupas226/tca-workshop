@@ -27,12 +27,12 @@ Workshop を進めるための下準備が済んであるリポジトリを用�
 [](https://github.com/kalupas226/tca-workshop.git)
 
 このリポジトリには Workshop を進める際に利用する `main` branch と Workshop 完了後のコード例が含まれている `complete` branch が存在します。  
-complete branch を見てしまうとネタバレになってしまい面白くないと思うので、Workshop が終わるまでは見ないようにしてください。
+complete branch を見てしまうとネタバレになってしまい面白くないと思うので、Workshop が終わるまでは見ないようにしましょう。
 
 ### GitHub の Personal Access Token の準備
 
 Workshop では、GitHub の API を利用することになります。  
-GitHub の API は Personal Access Token (PAT) を利用することで、より多くの回数のリクエストが行えるようになります。  
+GitHub の API は Personal Access Token (PAT) を利用することで、API の制限を緩和してリクエストが行えるようになります。  
 無闇やたらに API を利用するわけではないですが、Workshop を円滑に進めるための準備として PAT を用意してもらいます。
 
 [personal access token (classic) の作成](https://docs.github.com/ja/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#personal-access-token-classic-%E3%81%AE%E4%BD%9C%E6%88%90) を参考に PAT を作成してください。  
@@ -41,6 +41,8 @@ GitHub の API を利用するために必要な、`repo` scope が最低限設�
 PAT を用意できたら、PAT をコピーし Xcode Project の Build Settings にある User-Defined 内の `GITHUB_PERSONAL_ACCESS_TOKEN` に設定してください。
 
 ![](pat-user-defined.png)
+
+このプロジェクトでは、あらかじめ `Info.plist` ファイルで `GitHubPersonalAccessToken` という Key で User-Defined 内の `GITHUB_PERSONAL_ACCESS_TOKEN` を取得できるようにしてあるため、後ほどコードから設定した PAT を利用できるようになっています。
 
 ### Workshop のプロジェクト構造
 
