@@ -7,7 +7,7 @@
   @Chapter(name: "TCA の基本要素") {
     GitHub のリポジトリ一覧・検索画面を TCA で実装して、TCA を構成する様々な要素について学びましょう。
 
-    <!--        @Image(source: <#file#>, alt: "<#accessible description#>")-->
+    @Image(source: "chapter01.png", alt: "chapter01をイメージした図")
 
     @TutorialReference(tutorial: "doc:01-CreateViewWithTCA")
     @TutorialReference(tutorial: "doc:02-ForEachComposition")
@@ -18,7 +18,7 @@
     TCA における依存関係の制御方法を学びましょう。  
     また、依存関係を制御して Xcode Previews と Unit Tests をより効率的に作成する方法も学びましょう。
 
-    <!--        @Image(source: <#file#>, alt: "<#accessible description#>")-->
+    @Image(source: "chapter02.png", alt: "chapter02をイメージした図")
     
     @TutorialReference(tutorial: "doc:04-ImprovingPreviews")
     @TutorialReference(tutorial: "doc:05-WriteUnitTests")
@@ -27,7 +27,7 @@
   @Chapter(name: "Navigation") {
     TCA を用いた Alert と画面遷移の実装を通して、Tree-based navigation と Stack-based navigation について学びましょう。
 
-    <!--        @Image(source: <#file#>, alt: "<#accessible description#>")-->
+    @Image(source: "chapter03.png", alt: "chapter03をイメージした図")
 
     @TutorialReference(tutorial: "doc:06-TreeBasedNavigation")
     @TutorialReference(tutorial: "doc:07-StackBasedNavigation")
@@ -37,7 +37,7 @@
     ここまでの Chapter では、チュートリアル形式で TCA について学んでもらいました。  
     ここからは実践的な機能を自分の力で実装して、TCA についての理解度をさらに深めていきましょう。
     
-    <!--        @Image(source: <#file#>, alt: "<#accessible description#>")-->
+    @Image(source: "chapter04.png", alt: "chapter04をイメージした図")
 
     @TutorialReference(tutorial: "doc:08-DetailFavorite")
     @TutorialReference(tutorial: "doc:09-FavoriteNavigation")
@@ -45,6 +45,5 @@
   }
 
   @Resources {
-    
   }
 }
