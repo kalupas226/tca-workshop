@@ -49,6 +49,7 @@ public struct RepositoryListView: View {
           state: /RepositoryList.Destination.State.alert,
           action: RepositoryList.Destination.Action.alert
         )
+        // navigationDestination の削除
       }
     }
   }

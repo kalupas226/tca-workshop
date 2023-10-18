@@ -20,6 +20,7 @@ public struct RepositoryListView: View {
         } else {
           List {
             ForEach(viewStore.repositories, id: \.id) { repository in
+              // Button の削除
             }
           }
         }

@@ -123,10 +123,12 @@ extension RepositoryList {
   public struct Destination: Reducer {
     public enum State: Equatable {
       case alert(AlertState<Action.Alert>)
+      // repositoryDetail case の削除
     }
     
     public enum Action: Equatable {
       case alert(Alert)
+      // repositoryDetail case の削除
       
       public enum Alert: Equatable {}
     }
