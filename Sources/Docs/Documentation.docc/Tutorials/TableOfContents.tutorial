@@ -1,6 +1,6 @@
 @Tutorials(name: "TCA Workshop") {
   @Intro(title: "TCA Workshop") {
-    The Composable Architecture (TCA) は、State management・Composition・Side effects・Testing・Ergonomics を強みとした、一貫性のある理解しやすい方法でアプリを開発できるライブラリです。  
+    [The Composable Architecture (TCA)](https://github.com/pointfreeco/swift-composable-architecture) は、State management・Composition・Side effects・Testing・Ergonomics を強みとした、一貫性のある理解しやすい方法でアプリを開発できるライブラリです。  
     この Workshop で、実践的なアプリ開発を通して The Composable Architecture を学んでいきましょう。
   }
 
@@ -45,5 +45,23 @@
   }
 
   @Resources {
+    TCA に関連するいくつかのリソースを紹介します。
+
+    @SampleCode(destination: "https://github.com/pointfreeco/swift-composable-architecture/tree/main/Examples") {
+      TCA はリポジトリにさまざまな実装サンプルを用意してくれています。  
+      これらのサンプルを実際に動かしたり、参考にコードを書いてみたりすることで、TCA を効率的に学ぶことができます。  
+      また、Point-Free は TCA 製の大規模なゲームアプリケーションである isowords のソースコードも公開しており、そちらも参考になります。
+
+      - [実装サンプル](https://github.com/pointfreeco/swift-composable-architecture/tree/main/Examples)
+      - [isowords](https://github.com/pointfreeco/isowords)
+    }
+    
+    @Documentation(destination: "https://pointfreeco.github.io/swift-composable-architecture/main/documentation/composablearchitecture/") {
+     TCA は豊富なドキュメントを用意してくれています。  
+     中には公式のチュートリアルも用意されているため、そちらもぜひチェックしてみてください。
+     
+     - [ドキュメント](https://pointfreeco.github.io/swift-composable-architecture/main/documentation/composablearchitecture)
+     - [公式チュートリアル](https://pointfreeco.github.io/swift-composable-architecture/main/tutorials/meetcomposablearchitecture)
+    }
   }
 }
