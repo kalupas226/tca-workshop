@@ -3,7 +3,9 @@ import ComposableArchitecture
 import Dependencies
 import Entity
 import Foundation
+import GitHubAPIClient
 import IdentifiedCollections
+import RepositoryDetailFeature
 import SwiftUI
 import SwiftUINavigationCore
 

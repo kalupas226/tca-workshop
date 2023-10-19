@@ -58,7 +58,7 @@
         まずは Reducer を View で使うための骨組みだけ作ります。  
         手順は `RepositoryListView` の時と同じで、特に新しいことはありません。
         
-        @Code(name: "RepositoryRowView.swift", file: 02-02-code-0001.swift)
+        @Code(name: "RepositoryRowView.swift", file: 02-02-code-0001.swift, previousFile: 02-02-code-0001-previous.swift)
       }
       @Step {
         次に、View の中身を実装します。  
@@ -151,8 +151,10 @@
       }
       @Step {
         それでは、`RepositoryListView` に `RepositoryRowView` を組み込みます。  
-        現在 SwiftUI の `ForEach` を利用して、`viewStore.repositories` をループさせ、`repository` ごとに必要な View を描画させるようなコードとなっています。  
-        先ほど `RepositoryList` Reducer に `RepositoryRow` Reducer を組み込んだため、TCA に用意されている `ForEachStore` という API を `ForEach` の代わりに利用することで、Row ごとに `StoreOf<RepositoryRow>` を提供し、View の Composition も実現できます。
+        現在は SwiftUI の `ForEach` を利用して、`viewStore.repositories` をループさせ、`repository` ごとに必要な View を描画させるようなコードとなっています。  
+        しかし、今はこのループの部分で先ほど作成した `RepositoryRowView` を Repository の数だけ表示する必要があります。  
+        `RepositoryRowView` には `StoreOf<RepositoryRow>` を提供する必要がありますが、TCA に用意されている `ForEachStore` という API を `ForEach` の代わりに利用することで、各 Row 用の `StoreOf<RepositoryRow>` を手に入れることができます。  
+        この `ForEachStore` には、複数の `RepositoryRow` domain を表現する Store を提供する必要がありますが、先ほど `RepositoryList` Reducer に `RepositoryRow` Reducer を組み込んだため、Store の `scope` API を利用すれば必要な Store を構築できます。
 
         @Code(name: "RepositoryListView.swift", file: 02-04-code-0002.swift)
       }

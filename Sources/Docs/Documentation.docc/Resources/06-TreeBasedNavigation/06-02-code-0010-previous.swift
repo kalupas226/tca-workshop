@@ -51,15 +51,6 @@ public struct RepositoryListView: View {
           state: /RepositoryList.Destination.State.alert,
           action: RepositoryList.Destination.Action.alert
         )
-        .navigationDestination(
-          store: store.scope(
-            state: \.$destination,
-            action: { .destination($0) }
-          ),
-          state: /RepositoryList.Destination.State.repositoryDetail,
-          action: RepositoryList.Destination.Action.repositoryDetail,
-          destination: RepositoryDetailView.init(store:)
-        )
       }
     }
   }

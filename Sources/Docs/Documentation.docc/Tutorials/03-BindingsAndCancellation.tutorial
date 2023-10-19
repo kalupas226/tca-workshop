@@ -71,7 +71,8 @@
       }
       @Step {
         `query` が変更された時には search エンドポイントに対してリクエストする必要がありますが、`onAppear` のタイミングで既に API リクエストしているため、その処理を使い回します。  
-        ほぼ共通の処理になるため function に処理を切り出しつつ、それを利用するようにしてみましょう。
+        ほぼ共通の処理になるため function に処理を切り出しつつ、それを利用するようにしてみましょう。  
+        `searchRepositories(by:)` function では、引数に受け取っている `query` を利用するように変更していることに注意しましょう。
         
         @Code(name: "RepositoryListView.swift", file: 03-03-code-0002.swift)
         

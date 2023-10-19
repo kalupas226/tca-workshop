@@ -82,7 +82,7 @@
       @Step {
         それでは先ほど定義した `GitHubAPIClient` を実際に Reducer で使ってみましょう。  
         先ほど少しだけ説明しましたが、Reducer では `@Dependency` という Property Wrapper を通してこの依存関係を利用できます。  
-        この `@Dependency` を利用するために `Dependencies` を import します。  
+        この `@Dependency` を利用するために `Dependencies` と `GitHubAPIClient` module を import します。  
         また、`GitHubAPIClient` の `liveValue` を実装した際に、Reducer の `searchRepositories(by:)` 内にある `TaskResult` の中身はカットしているはずなので、その部分で代わりに `GitHubAPIClient` を利用するように書き換えましょう。
 
         @Code(name: "RepositoryListView.swift", file: 04-02-code-0001.swift, previousFile: 04-02-code-0001-previous.swift)

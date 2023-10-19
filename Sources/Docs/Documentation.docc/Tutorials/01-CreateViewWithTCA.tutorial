@@ -14,7 +14,7 @@
     }
     @Steps {
       @Step {
-        まず、TCA に用意されている `Reducer` protocol に準拠した構造体を作成します。  
+        まず、TCA に用意されている `Reducer` protocol に準拠した構造体を `RepositoryListView.swift` に作成します。  
         TCA に用意されている API を利用するための `ComposableArchitecture` と、この後利用することになる `Foundation` および `Repository` という構造体を利用するための `Entity` module の import も行っておきます。
 
         @Code(name: "RepositoryListView.swift", file: 01-01-code-0001.swift)
@@ -51,6 +51,7 @@
         次に `Reducer` protocol に準拠するための最後の要素である `body` の実装を行っていきます。  
         `body` は、何らかの `Action` が与えられた時に、`State` を現在の値から次の値へと変更する責務と、
         アプリが外の世界で実行すべき処理である `Effect` を返却する責務を持ちます。  
+        基本的には TCA が用意してくれている `Reduce` という API を利用することで、これらを表現できます。  
         今回のアプリでは、画面表示のタイミングで GitHub API に対して Request を行うため、手始めに Request 前に `isLoading` の状態をロード中 (`true`) にするという処理を書いてみましょう。  
         この時点では、外の世界で実行したい処理は特にないため、それを表現する `Effect.none` を返却します。
 
@@ -66,7 +67,7 @@
         先ほど説明した通り、API Request は「外の世界で実行される処理」に該当するため、`Effect` を返却する形で実装します。  
         基本的には TCA に用意されている `Effect.run` を利用することになります。   
         API Request は非同期処理となりますが、基本的に TCA では Reducer において `Effect.run` の中でのみ非同期処理を実行できます。  
-        また、`Effect.run` は closure に、`Send` という型の `@MainActor` が付与された型を提供しており、これを利用して `await send(.action)` のような形で、任意の Action を発火できます。  
+        また、`Effect.run` は closure に、`Send` という型の `@MainActor` が付与された型を提供しており、これを利用して `await send(.someAction)` のような形で、任意の Action を発火できます。  
         ここでの `TaskResult` 内の処理は少し長くなっていますが、GitHub API の search エンドポイントに対してリクエストしているだけです。  
         後ほど、処理のリファクタリングは行います。
         
@@ -157,11 +158,13 @@
         `Store` には `init(initialState:reducer:withDependencies)` という initializer があり、
         これの `initialState` と `reducer` を最低限提供すれば initialize できます。
         (`withDependencies` については後ほど説明します。)    
-        必要な値で initialize すれば、実際の API Request が発生する Previews が表示されます。
+        必要な値で initialize すれば、実際の API Request が発生する Previews が表示されます。(Scheme で RepositoryListFeature が選択されている必要があります。)
 
         @Code(name: "RepositoryListView.swift", file: 01-03-code-0001.swift, previousFile: 01-02-code-0005.swift) {
           @Image(source: "01-03-image-0001", alt: "Xcode Previews で RepositoryListView を表示している図")
         }
+        
+        > ちなみに initializer で利用している `RepositoryList` Reducer に `._printChanges()` をつけると、Reducer で起きた Action や State の変化を Xcode の Console に表示でき、デバッグに役立ちます。
       }
       @Step {
         続いて、アプリを起動して `RepositoryListView` を確認できるようにします。  

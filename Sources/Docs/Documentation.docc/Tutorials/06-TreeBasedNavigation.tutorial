@@ -104,7 +104,8 @@
       @Step {
         ここまでで、リポジトリ詳細画面への遷移を表現するための下準備が整いました。  
         ここからは、リポジトリ詳細画面への Push 遷移を実装していきましょう。  
-        リポジトリ詳細画面は、`RepositoryDetailView.swift` というファイル名でプロジェクト内に用意されています。基本的な実装は一通り済ませてあるので、`RepositoryDetail.State`, `RepositoryDetail.Action`, `RepositoryDetail` の実装を `Destination` Reducer で利用します。
+        リポジトリ詳細画面は、`RepositoryDetailView.swift` というファイル名でプロジェクト内に用意されています。基本的な実装は一通り済ませてあるので、`RepositoryDetailFeature` を import しつつ、`RepositoryDetail.State`, `RepositoryDetail.Action`, `RepositoryDetail` の実装を `Destination` Reducer で利用します。  
+        `RepositoryDetail` Reducer を `Destination` Reducer に組み込むためには、`Scope` という API を利用します。使い方は `RepositoryRow` Reducer を組み込む際に利用した `forEach` と大きくは変わりませんが、`Destination.State` は enum で表現されているため、`state` 引数にも CasePath を利用していることに注意しましょう。
         
         @Code(name: "RepositoryListView.swift", file: 06-02-code-0006.swift, previousFile: 06-02-code-0004.swift)
       }
@@ -113,6 +114,9 @@
         そのためのコードを `RepositoryList` Reducer に追加しましょう。
         
         @Code(name: "RepositoryListView.swift", file: 06-02-code-0007.swift)
+
+        > `destination` が Optional な状態として保持されており、その Optional な状態と接続するために Swift の Optional binding のような名前の `ifLet` という API を利用する必要があります。  
+        > Collection に対しては `forEach`, Optional に対しては `ifLet` で接続すると覚えておくと理解しやすいかもしれません。
       }
       @Step {
         リポジトリ一覧の Row をタップした時に画面遷移させたいため、`RepositoryRow` Reducer に少し実装を追加します。  
@@ -134,7 +138,7 @@
       @Step {
         最後に、`state.destination` の状態が変わったタイミングで Push 遷移が実行されるようにするために、iOS 16 から利用できる `navigationDestination` の TCA 版 API である `navigationDestination(store:state:action:destination:)` を利用して実装を追加します。  
 
-        @Code(name: "RepositoryListView.swift", file: 06-02-code-0010.swift, previousFile: 06-02-code-0005.swift)
+        @Code(name: "RepositoryListView.swift", file: 06-02-code-0010.swift, previousFile: 06-02-code-0010-previous.swift)
       }
       @Step {
         この状態でアプリを実行してみれば、リポジトリ一覧画面の Row から各リポジトリ詳細画面に遷移できるようになっているはずです。確認してみましょう。

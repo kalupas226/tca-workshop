@@ -8,7 +8,7 @@ public struct RepositoryRow: Reducer {
   }
 
   public enum Action: Equatable {
-    
+
   }
 
   public var body: some ReducerOf<Self> {

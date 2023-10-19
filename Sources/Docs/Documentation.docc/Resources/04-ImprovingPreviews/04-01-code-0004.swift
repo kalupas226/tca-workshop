@@ -38,7 +38,7 @@ private let jsonDecoder: JSONDecoder = {
 
 extension GitHubAPIClient: TestDependencyKey {
   public static let previewValue = Self(
-    searchRepositories: { query in [] }
+    searchRepositories: { _ in [] }
   )
   
   public static let testValue = Self(
