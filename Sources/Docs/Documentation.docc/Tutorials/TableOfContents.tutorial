@@ -14,7 +14,7 @@
     @TutorialReference(tutorial: "doc:03-BindingsAndCancellation")
   }
   
-  @Chapter(name: "依存関係の制御と Xcode Preiviews・Unit Tests") {
+  @Chapter(name: "依存関係の制御と Xcode Previews・Unit Tests") {
     TCA における依存関係の制御方法を学びましょう。  
     また、依存関係を制御して Xcode Previews と Unit Tests をより効率的に作成する方法も学びましょう。
 
