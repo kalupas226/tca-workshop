@@ -15,8 +15,5 @@ extension UserDefaultsClient: TestDependencyKey {
     setData: { _, _ in }
   )
   
-  public static let testValue = Self(
-    dataForKey: unimplemented("\(Self.self).dataForKey"),
-    setData: unimplemented("\(Self.self).setData")
-  )
+  public static let testValue = Self()
 }

@@ -17,13 +17,13 @@ final class RepositoryListFeatureTests: XCTestCase {
     ) {
       RepositoryList()
     } withDependencies: {
-      $0.gitHubAPIClient.searchRepositories = { _ in response }
+      $0.gitHubAPIClient.searchRepositories = { @Sendable _ in response }
     }
     
     await store.send(.onAppear) {
       $0.isLoading = true
     }
-    await store.receive(.searchRepositoriesResponse(.success(response))) {
+    await store.receive(\.searchRepositoriesResponse) {
       $0.repositoryRows = .init(
         uniqueElements: response.map {
           .init(repository: $0)
@@ -39,7 +39,7 @@ final class RepositoryListFeatureTests: XCTestCase {
     ) {
       RepositoryList()
     } withDependencies: {
-      $0.gitHubAPIClient.searchRepositories = { _ in
+      $0.gitHubAPIClient.searchRepositories = { @Sendable _ in
         throw TestError.search
       }
     }
@@ -47,7 +47,7 @@ final class RepositoryListFeatureTests: XCTestCase {
     await store.send(.onAppear) {
       $0.isLoading = true
     }
-    await store.receive(.searchRepositoriesResponse(.failure(TestError.search))) {
+    await store.receive(\.searchRepositoriesResponse) {
       $0.destination = .alert(.networkError)
       $0.isLoading = false
     }
@@ -64,18 +64,18 @@ final class RepositoryListFeatureTests: XCTestCase {
     ) {
       RepositoryList()
     } withDependencies: {
-      $0.gitHubAPIClient.searchRepositories = { _ in response }
+      $0.gitHubAPIClient.searchRepositories = { @Sendable _ in response }
       $0.mainQueue = testScheduler.eraseToAnyScheduler()
     }
 
-    await store.send(.binding(.set(\.$query, "test"))) {
+    await store.send(.binding(.set(\.query, "test"))) {
       $0.query = "test"
     }
     await testScheduler.advance(by: .seconds(0.3))
-    await store.receive(.queryChangeDebounced) {
+    await store.receive(\.queryChangeDebounced) {
       $0.isLoading = true
     }
-    await store.receive(.searchRepositoriesResponse(.success(response))) {
+    await store.receive(\.searchRepositoriesResponse) {
       $0.repositoryRows = .init(
         uniqueElements: response.map {
           .init(repository: $0)
@@ -98,7 +98,7 @@ final class RepositoryListFeatureTests: XCTestCase {
       RepositoryList()
     }
 
-    await store.send(.repositoryRows(id: 1, action: .delegate(.rowTapped))) {
+    await store.send(.repositoryRows(.element(id: 1, action: .delegate(.rowTapped)))) {
       $0.path = .init(
         [
           .repositoryDetail(.init(repository: .mock(id: 1)))

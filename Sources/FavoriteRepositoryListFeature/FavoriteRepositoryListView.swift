@@ -7,7 +7,9 @@ import RepositoryDetailFeature
 import SwiftUI
 import UserDefaultsClient
 
-public struct FavoriteRepositoryList: Reducer {
+@Reducer
+public struct FavoriteRepositoryList {
+  @ObservableState
   public struct State: Equatable {
     var repositoryRows: IdentifiedArrayOf<RepositoryRow.State> = []
     var path = StackState<Path.State>()
@@ -15,10 +17,10 @@ public struct FavoriteRepositoryList: Reducer {
     public init() {}
   }
 
-  public enum Action: Equatable {
+  public enum Action {
     case onAppear
     case delete(IndexSet)
-    case repositoryRow(id: RepositoryRow.State.ID, action: RepositoryRow.Action)
+    case repositoryRows(IdentifiedActionOf<RepositoryRow>)
     case path(StackAction<Path.State, Path.Action>)
   }
   
@@ -27,7 +29,7 @@ public struct FavoriteRepositoryList: Reducer {
   public init() {}
 
   public var body: some ReducerOf<Self> {
-    Reduce<State, Action> { state, action in
+    Reduce { state, action in
       switch action {
       case .onAppear:
         state.repositoryRows = .init(
@@ -46,38 +48,40 @@ public struct FavoriteRepositoryList: Reducer {
           )
         }
         return .none
-      case let .repositoryRow(id: _, action: .delegate(.rowTapped(repository))):
+      case let .repositoryRows(.element(_, action: .delegate(.rowTapped(repository)))):
         state.path.append(
           .repositoryDetail(
             .init(repository: repository)
           )
         )
         return .none
-      case .repositoryRow:
+      case .repositoryRows:
         return .none
       case .path:
         return .none
       }
     }
-    .forEach(\.repositoryRows, action: /Action.repositoryRow(id:action:)) {
+    .forEach(\.repositoryRows, action: \.repositoryRows) {
       RepositoryRow()
     }
-    .forEach(\.path, action: /Action.path) {
+    .forEach(\.path, action: \.path) {
       Path()
     }
   }
   
-  public struct Path: Reducer {
+  @Reducer
+  public struct Path {
+    @ObservableState
     public enum State: Equatable {
       case repositoryDetail(RepositoryDetail.State)
     }
     
-    public enum Action: Equatable {
+    public enum Action {
       case repositoryDetail(RepositoryDetail.Action)
     }
     
     public var body: some ReducerOf<Self> {
-      Scope(state: /State.repositoryDetail, action: /Action.repositoryDetail) {
+      Scope(state: \.repositoryDetail, action: \.repositoryDetail) {
         RepositoryDetail()
       }
     }
@@ -85,45 +89,41 @@ public struct FavoriteRepositoryList: Reducer {
 }
 
 public struct FavoriteRepositoryListView: View {
-  let store: StoreOf<FavoriteRepositoryList>
-  
+  @Bindable var store: StoreOf<FavoriteRepositoryList>
+
   public init(store: StoreOf<FavoriteRepositoryList>) {
     self.store = store
   }
 
   public var body: some View {
-    NavigationStackStore(
-      store.scope(
+    NavigationStack(
+      path: $store.scope(
         state: \.path,
-        action: { .path($0) }
+        action: \.path
       )
     ) {
-      WithViewStore(store, observe: { $0 }) { viewStore in
-        List {
-          ForEachStore(
-            store.scope(
-              state: \.repositoryRows,
-              action: { .repositoryRow(id: $0, action: $1) }
-            ),
-            content: RepositoryRowView.init(store:)
-          )
-          .onDelete {
-            viewStore.send(.delete($0))
-          }
-        }
-        .navigationTitle("Favorite Repositories")
-        .onAppear {
-          viewStore.send(.onAppear)
+      List {
+        ForEach(
+          store.scope(
+            state: \.repositoryRows,
+            action: \.repositoryRows
+          ),
+          content: RepositoryRowView.init(store:)
+        )
+        .onDelete {
+          store.send(.delete($0))
         }
       }
-    } destination: {
-      switch $0 {
+      .navigationTitle("Favorite Repositories")
+      .onAppear {
+        store.send(.onAppear)
+      }
+    } destination: { store in
+      switch store.state {
       case .repositoryDetail:
-        CaseLet(
-          /FavoriteRepositoryList.Path.State.repositoryDetail,
-           action: FavoriteRepositoryList.Path.Action.repositoryDetail,
-           then: RepositoryDetailView.init(store:)
-        )
+        if let store = store.scope(state: \.repositoryDetail, action: \.repositoryDetail) {
+          RepositoryDetailView(store: store)
+        }
       }
     }
   }

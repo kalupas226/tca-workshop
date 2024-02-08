@@ -6,19 +6,21 @@ import SwiftUI
 import UserDefaultsClient
 import WebKit
 
-public struct RepositoryDetail: Reducer {
+@Reducer
+public struct RepositoryDetail {
+  @ObservableState
   public struct State: Equatable {
     let repository: Repository
 
     var isFavoriteRepository = false
-    @BindingState var isWebViewLoading = true
+    var isWebViewLoading = true
 
     public init(repository: Repository) {
       self.repository = repository
     }
   }
   
-  public enum Action: Equatable, BindableAction {
+  public enum Action: BindableAction {
     case onAppear
     case favoriteButtonTapped
     case binding(BindingAction<State>)
@@ -58,40 +60,38 @@ public struct RepositoryDetail: Reducer {
 }
 
 public struct RepositoryDetailView: View {
-  let store: StoreOf<RepositoryDetail>
-  
+  @Bindable var store: StoreOf<RepositoryDetail>
+
   public init(store: StoreOf<RepositoryDetail>) {
     self.store = store
   }
 
   public var body: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
-      SimpleWebView(
-        url: viewStore.repository.htmlUrl,
-        isLoading: viewStore.$isWebViewLoading
-      )
-      .overlay(alignment: .center) {
-        if viewStore.isWebViewLoading {
-          ProgressView()
-        }
+    SimpleWebView(
+      url: store.repository.htmlUrl,
+      isLoading: $store.isWebViewLoading
+    )
+    .overlay(alignment: .center) {
+      if store.isWebViewLoading {
+        ProgressView()
       }
-      .onAppear {
-        viewStore.send(.onAppear)
-      }
-      .navigationBarTitleDisplayMode(.inline)
-      .toolbar {
-        ToolbarItem(placement: .topBarTrailing) {
-          Button {
-            viewStore.send(.favoriteButtonTapped)
-          } label: {
-            if viewStore.isFavoriteRepository {
-              Image(systemName: "heart.fill")
-            } else {
-              Image(systemName: "heart")
-            }
+    }
+    .onAppear {
+      store.send(.onAppear)
+    }
+    .navigationBarTitleDisplayMode(.inline)
+    .toolbar {
+      ToolbarItem(placement: .topBarTrailing) {
+        Button {
+          store.send(.favoriteButtonTapped)
+        } label: {
+          if store.isFavoriteRepository {
+            Image(systemName: "heart.fill")
+          } else {
+            Image(systemName: "heart")
           }
-          .disabled(viewStore.isWebViewLoading)
         }
+        .disabled(store.isWebViewLoading)
       }
     }
   }

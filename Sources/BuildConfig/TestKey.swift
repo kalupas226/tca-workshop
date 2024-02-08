@@ -9,11 +9,7 @@ extension DependencyValues {
 }
 
 extension BuildConfig: TestDependencyKey {
-  public static let previewValue = Self(
-    gitHubPersonalAccessToken: { "" }
-  )
+  public static let previewValue = Self()
   
-  public static let testValue = Self(
-    gitHubPersonalAccessToken: unimplemented("\(Self.self).gitHubPersonalAccessToken")
-  )
+  public static let testValue = Self()
 }

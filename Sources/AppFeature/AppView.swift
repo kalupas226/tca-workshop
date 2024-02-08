@@ -4,7 +4,9 @@ import FavoriteRepositoryListFeature
 import RepositoryListFeature
 import SwiftUI
 
-public struct App: Reducer {
+@Reducer
+public struct App {
+  @ObservableState
   public struct State: Equatable {
     var repositoryList = RepositoryList.State()
     var favoriteRepositoryList = FavoriteRepositoryList.State()
@@ -12,7 +14,7 @@ public struct App: Reducer {
     public init() {}
   }
   
-  public enum Action: Equatable {
+  public enum Action {
     case repositoryList(RepositoryList.Action)
     case favoriteRepositoryList(FavoriteRepositoryList.Action)
   }
@@ -20,10 +22,10 @@ public struct App: Reducer {
   public init() {}
 
   public var body: some ReducerOf<Self> {
-    Scope(state: \.repositoryList, action: /Action.repositoryList) {
+    Scope(state: \.repositoryList, action: \.repositoryList) {
       RepositoryList()
     }
-    Scope(state: \.favoriteRepositoryList, action: /Action.favoriteRepositoryList) {
+    Scope(state: \.favoriteRepositoryList, action: \.favoriteRepositoryList) {
       FavoriteRepositoryList()
     }
   }
@@ -41,7 +43,7 @@ public struct AppView: View {
       RepositoryListView(
         store: store.scope(
           state: \.repositoryList,
-          action: { .repositoryList($0) }
+          action: \.repositoryList
         )
       )
       .tabItem {
@@ -50,7 +52,7 @@ public struct AppView: View {
       FavoriteRepositoryListView(
         store: store.scope(
           state: \.favoriteRepositoryList,
-          action: { .favoriteRepositoryList($0) }
+          action: \.favoriteRepositoryList
         )
       )
       .tabItem {

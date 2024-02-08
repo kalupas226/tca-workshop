@@ -13,7 +13,5 @@ extension GitHubAPIClient: TestDependencyKey {
     searchRepositories: { _ in [] }
   )
 
-  public static let testValue = Self(
-    searchRepositories: unimplemented("\(Self.self).searchRepositories")
-  )
+  public static let testValue = Self()
 }

@@ -8,27 +8,29 @@ import RepositoryDetailFeature
 import SwiftUI
 import SwiftUINavigationCore
 
-public struct RepositoryList: Reducer {
+@Reducer
+public struct RepositoryList {
+  @ObservableState
   public struct State: Equatable {
     var repositoryRows: IdentifiedArrayOf<RepositoryRow.State> = []
     var isLoading: Bool = false
-    @BindingState var query: String = ""
-    @PresentationState var destination: Destination.State?
+    var query: String = ""
+    @Presents var destination: Destination.State?
     var path = StackState<Path.State>()
 
     public init() {}
   }
 
-  public enum Action: Equatable, BindableAction {
+  public enum Action: BindableAction {
     case onAppear
     case queryChangeDebounced
-    case searchRepositoriesResponse(TaskResult<[Repository]>)
-    case repositoryRows(id: RepositoryRow.State.ID, action: RepositoryRow.Action)
+    case searchRepositoriesResponse(Result<[Repository], Error>)
+    case repositoryRows(IdentifiedActionOf<RepositoryRow>)
     case binding(BindingAction<State>)
     case destination(PresentationAction<Destination.Action>)
     case path(StackAction<Path.State, Path.Action>)
 
-    public enum Alert: Equatable {}
+    public enum Alert {}
   }
 
   @Dependency(\.gitHubAPIClient) var gitHubAPIClient
@@ -50,7 +52,7 @@ public struct RepositoryList: Reducer {
         return .run { send in
           await send(
             .searchRepositoriesResponse(
-              TaskResult {
+              Result {
                 try await gitHubAPIClient.searchRepositories("composable")
               }
             )
@@ -71,7 +73,7 @@ public struct RepositoryList: Reducer {
           state.destination = .alert(.networkError)
           return .none
         }
-      case let .repositoryRows(id, .delegate(.rowTapped)):
+      case let .repositoryRows(.element(id, .delegate(.rowTapped))):
         guard let repository = state.repositoryRows[id: id]?.repository
         else { return .none }
 
@@ -83,7 +85,7 @@ public struct RepositoryList: Reducer {
         return .none
       case .repositoryRows:
         return .none
-      case .binding(\.$query):
+      case .binding(\.query):
         return .run { send in
           await send(.queryChangeDebounced)
         }
@@ -102,7 +104,7 @@ public struct RepositoryList: Reducer {
         return .run { [query = state.query] send in
           await send(
             .searchRepositoriesResponse(
-              TaskResult {
+              Result {
                 try await gitHubAPIClient.searchRepositories(query)
               }
             )
@@ -112,25 +114,27 @@ public struct RepositoryList: Reducer {
         return .none
       }
     }
-    .forEach(\.repositoryRows, action: /Action.repositoryRows(id:action:)) {
+    .forEach(\.repositoryRows, action: \.repositoryRows) {
       RepositoryRow()
     }
-    .forEach(\.path, action: /Action.path) {
+    .forEach(\.path, action: \.path) {
       Path()
     }
-    .ifLet(\.$destination, action: /Action.destination) {
+    .ifLet(\.$destination, action: \.destination) {
       Destination()
     }
   }
 }
 
 extension RepositoryList {
-  public struct Destination: Reducer {
+  @Reducer
+  public struct Destination {
+    @ObservableState
     public enum State: Equatable {
       case alert(AlertState<Action.Alert>)
     }
 
-    public enum Action: Equatable {
+    public enum Action {
       case alert(Alert)
       
       public enum Alert: Equatable {}
@@ -141,17 +145,19 @@ extension RepositoryList {
     }
   }
 
-  public struct Path: Reducer {
+  @Reducer
+  public struct Path {
+    @ObservableState
     public enum State: Equatable {
       case repositoryDetail(RepositoryDetail.State)
     }
 
-    public enum Action: Equatable {
+    public enum Action {
       case repositoryDetail(RepositoryDetail.Action)
     }
 
     public var body: some ReducerOf<Self> {
-      Scope(state: /State.repositoryDetail, action: /Action.repositoryDetail) {
+      Scope(state: \.repositoryDetail, action: \.repositoryDetail) {
         RepositoryDetail()
       }
     }
@@ -167,61 +173,55 @@ extension AlertState where Action == RepositoryList.Destination.Action.Alert {
 }
 
 public struct RepositoryListView: View {
-  let store: StoreOf<RepositoryList>
+  @Bindable var store: StoreOf<RepositoryList>
 
   public init(store: StoreOf<RepositoryList>) {
     self.store = store
   }
 
   public var body: some View {
-    NavigationStackStore(
-      store.scope(
+    NavigationStack(
+      path: $store.scope(
         state: \.path,
-        action: { .path($0) }
+        action: \.path
       )
     ) {
-      WithViewStore(store, observe: { $0 }) { viewStore in
-        Group {
-          if viewStore.isLoading {
-            ProgressView()
-          } else {
-            List {
-              ForEachStore(
-                store.scope(
-                  state: \.repositoryRows,
-                  action: { .repositoryRows(id: $0, action: $1) }
-                ),
-                content: RepositoryRowView.init(store:)
-              )
-            }
+      Group {
+        if store.isLoading {
+          ProgressView()
+        } else {
+          List {
+            ForEach(
+              store.scope(
+                state: \.repositoryRows,
+                action: \.repositoryRows
+              ),
+              content: RepositoryRowView.init(store:)
+            )
           }
         }
-        .onAppear {
-          store.send(.onAppear)
-        }
-        .navigationTitle("Search Repositories")
-        .alert(
-          store: store.scope(
-            state: \.$destination,
-            action: { .destination($0) }
-          ),
-          state: /RepositoryList.Destination.State.alert,
-          action: RepositoryList.Destination.Action.alert
-        )
-        .searchable(
-          text: viewStore.$query,
-          placement: .navigationBarDrawer,
-          prompt: "Input query"
-        )
       }
-    } destination: { state in
-      switch state {
-      case .repositoryDetail:
-        CaseLet(
-          /RepositoryList.Path.State.repositoryDetail,
-           action: RepositoryList.Path.Action.repositoryDetail,
-           then: RepositoryDetailView.init(store:)
+      .onAppear {
+        store.send(.onAppear)
+      }
+      .navigationTitle("Search Repositories")
+      .alert(
+        $store.scope(
+          state: \.destination?.alert,
+          action: \.destination.alert
         )
+      )
+      .searchable(
+        text: $store.query,
+        placement: .navigationBarDrawer,
+        prompt: "Input query"
+      )
+    } destination: { store in
+      switch store.state {
+      case .repositoryDetail:
+        if let store = store.scope(state: \.repositoryDetail, action: \.repositoryDetail) {
+          RepositoryDetailView(store: store)
+        }
       }
     }
   }
@@ -234,7 +234,7 @@ public struct RepositoryListView: View {
     ) {
       RepositoryList()
     } withDependencies: {
-      $0.gitHubAPIClient.searchRepositories = { _ in
+      $0.gitHubAPIClient.searchRepositories = { @Sendable _ in
         (1...20).map { .mock(id: $0) }
       }
     }
@@ -251,7 +251,7 @@ public struct RepositoryListView: View {
     ) {
       RepositoryList()
     } withDependencies: {
-      $0.gitHubAPIClient.searchRepositories = { _ in
+      $0.gitHubAPIClient.searchRepositories = { @Sendable _ in
         throw PreviewError.fetchFailed
       }
     }

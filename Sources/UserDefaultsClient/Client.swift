@@ -1,6 +1,9 @@
+import Dependencies
+import DependenciesMacros
 import Entity
 import Foundation
 
+@DependencyClient
 public struct UserDefaultsClient {
   public var dataForKey: @Sendable (String) -> Data?
   public var setData: @Sendable (Data?, String) -> Void
