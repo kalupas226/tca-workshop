@@ -64,27 +64,12 @@ public struct FavoriteRepositoryList {
     .forEach(\.repositoryRows, action: \.repositoryRows) {
       RepositoryRow()
     }
-    .forEach(\.path, action: \.path) {
-      Path()
-    }
+    .forEach(\.path, action: \.path)
   }
   
-  @Reducer
-  public struct Path {
-    @ObservableState
-    public enum State: Equatable {
-      case repositoryDetail(RepositoryDetail.State)
-    }
-    
-    public enum Action {
-      case repositoryDetail(RepositoryDetail.Action)
-    }
-    
-    public var body: some ReducerOf<Self> {
-      Scope(state: \.repositoryDetail, action: \.repositoryDetail) {
-        RepositoryDetail()
-      }
-    }
+  @Reducer(state: .equatable)
+  public enum Path {
+    case repositoryDetail(RepositoryDetail)
   }
 }
 
@@ -119,11 +104,9 @@ public struct FavoriteRepositoryListView: View {
         store.send(.onAppear)
       }
     } destination: { store in
-      switch store.state {
-      case .repositoryDetail:
-        if let store = store.scope(state: \.repositoryDetail, action: \.repositoryDetail) {
-          RepositoryDetailView(store: store)
-        }
+      switch store.case {
+      case let .repositoryDetail(store):
+        RepositoryDetailView(store: store)
       }
     }
   }

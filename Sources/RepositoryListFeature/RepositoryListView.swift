@@ -29,8 +29,6 @@ public struct RepositoryList {
     case binding(BindingAction<State>)
     case destination(PresentationAction<Destination.Action>)
     case path(StackAction<Path.State, Path.Action>)
-
-    public enum Alert {}
   }
 
   @Dependency(\.gitHubAPIClient) var gitHubAPIClient
@@ -117,54 +115,26 @@ public struct RepositoryList {
     .forEach(\.repositoryRows, action: \.repositoryRows) {
       RepositoryRow()
     }
-    .forEach(\.path, action: \.path) {
-      Path()
-    }
-    .ifLet(\.$destination, action: \.destination) {
-      Destination()
-    }
+    .forEach(\.path, action: \.path)
+    .ifLet(\.$destination, action: \.destination)
   }
 }
 
 extension RepositoryList {
-  @Reducer
-  public struct Destination {
-    @ObservableState
-    public enum State: Equatable {
-      case alert(AlertState<Action.Alert>)
-    }
+  @Reducer(state: .equatable)
+  public enum Destination {
+    case alert(AlertState<Alert>)
 
-    public enum Action {
-      case alert(Alert)
-      
-      public enum Alert: Equatable {}
-    }
-    
-    public var body: some ReducerOf<Self> {
-      EmptyReducer()
-    }
+    public enum Alert: Equatable {}
   }
 
-  @Reducer
-  public struct Path {
-    @ObservableState
-    public enum State: Equatable {
-      case repositoryDetail(RepositoryDetail.State)
-    }
-
-    public enum Action {
-      case repositoryDetail(RepositoryDetail.Action)
-    }
-
-    public var body: some ReducerOf<Self> {
-      Scope(state: \.repositoryDetail, action: \.repositoryDetail) {
-        RepositoryDetail()
-      }
-    }
+  @Reducer(state: .equatable)
+  public enum Path {
+    case repositoryDetail(RepositoryDetail)
   }
 }
 
-extension AlertState where Action == RepositoryList.Destination.Action.Alert {
+extension AlertState where Action == RepositoryList.Destination.Alert {
   static let networkError = Self {
     TextState("Network Error")
   } message: {
@@ -217,11 +187,9 @@ public struct RepositoryListView: View {
         prompt: "Input query"
       )
     } destination: { store in
-      switch store.state {
-      case .repositoryDetail:
-        if let store = store.scope(state: \.repositoryDetail, action: \.repositoryDetail) {
-          RepositoryDetailView(store: store)
-        }
+      switch store.case {
+      case let .repositoryDetail(store):
+        RepositoryDetailView(store: store)
       }
     }
   }
