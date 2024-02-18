@@ -2,7 +2,9 @@ import ComposableArchitecture
 import Entity
 import Foundation
 
-public struct RepositoryList: Reducer {
+@Reducer
+public struct RepositoryList {
+  @ObservableState
   public struct State: Equatable {
     var repositories: [Repository] = []
     var isLoading: Bool = false
@@ -10,9 +12,9 @@ public struct RepositoryList: Reducer {
     public init() {}
   }
 
-  public enum Action: Equatable {
+  public enum Action {
     case onAppear
-    case searchRepositoriesResponse(TaskResult<[Repository]>)
+    case searchRepositoriesResponse(Result<[Repository], Error>)
   }
 
   public init() {}

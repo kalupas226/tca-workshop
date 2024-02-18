@@ -2,7 +2,9 @@ import ComposableArchitecture
 import Entity
 import Foundation
 
-public struct RepositoryList: Reducer {
+@Reducer
+public struct RepositoryList {
+  @ObservableState
   public struct State: Equatable {
     var repositories: [Repository] = []
     var isLoading: Bool = false
