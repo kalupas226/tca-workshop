@@ -4,7 +4,9 @@ import Foundation
 import IdentifiedCollections
 import SwiftUI
 
-public struct RepositoryList: Reducer {
+@Reducer
+public struct RepositoryList {
+  @ObservableState
   public struct State: Equatable {
     var repositoryRows: IdentifiedArrayOf<RepositoryRow.State> = []
     var isLoading: Bool = false
@@ -12,10 +14,10 @@ public struct RepositoryList: Reducer {
     public init() {}
   }
 
-  public enum Action: Equatable {
+  public enum Action {
     case onAppear
-    case searchRepositoriesResponse(TaskResult<[Repository]>)
-    case repositoryRow(id: RepositoryRow.State.ID, action: RepositoryRow.Action)
+    case searchRepositoriesResponse(Result<[Repository]>)
+    case repositoryRows(IdentifiedActionOf<RepositoryRow>)
   }
 
   public init() {}
@@ -28,7 +30,7 @@ public struct RepositoryList: Reducer {
         return .run { send in
           await send(
             .searchRepositoriesResponse(
-              TaskResult {
+              Result {
                 let query = "composable"
                 let url = URL(
                   string: "https://api.github.com/search/repositories?q=\(query)&sort=stars"
@@ -65,7 +67,7 @@ public struct RepositoryList: Reducer {
           // TODO: Handling error
           return .none
         }
-      case .repositoryRow:
+      case .repositoryRows:
         return .none
       }
     }

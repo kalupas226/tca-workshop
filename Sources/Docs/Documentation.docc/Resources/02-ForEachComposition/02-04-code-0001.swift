@@ -13,21 +13,19 @@ public struct RepositoryListView: View {
   }
   
   public var body: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
-      Group {
-        if viewStore.isLoading {
-          ProgressView()
-        } else {
-          List {
-            ForEach(viewStore.repositories, id: \.id) { repository in
-              // Button の削除
-            }
+    Group {
+      if store.isLoading {
+        ProgressView()
+      } else {
+        List {
+          ForEach(store.repositories, id: \.id) { repository in
+            // Button の削除
           }
         }
       }
-      .onAppear {
-        viewStore.send(.onAppear)
-      }
+    }
+    .onAppear {
+      store.send(.onAppear)
     }
   }
 }

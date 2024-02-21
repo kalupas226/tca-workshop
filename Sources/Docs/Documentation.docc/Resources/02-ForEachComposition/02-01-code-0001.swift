@@ -1,12 +1,14 @@
 import ComposableArchitecture
 import Entity
 
-public struct RepositoryRow: Reducer {
+@Reducer
+public struct RepositoryRow {
+  @ObservableState
   public struct State: Equatable {
 
   }
 
-  public enum Action: Equatable {
+  public enum Action {
 
   }
 

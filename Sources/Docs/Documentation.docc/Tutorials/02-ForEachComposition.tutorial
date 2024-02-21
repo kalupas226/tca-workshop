@@ -68,7 +68,7 @@
         @Code(name: "RepositoryRowView.swift", file: 02-02-code-0002.swift)
       }
       @Step {
-        ペーストした内容ではコンパイルできない状態となっているため、適宜 `viewStore` を利用するように修正します。  
+        ペーストした内容ではコンパイルできない状態となっているため、適宜 `store` を利用するように修正します。  
         また、`RepositoryListView` の時点では実装していなかった、`Button` の `action` で `rowTapped` Action を送るようにもしておきましょう。
         
         @Code(name: "RepositoryRowView.swift", file: 02-02-code-0003.swift)
@@ -88,16 +88,19 @@
     @ContentAndMedia {
       Row のための Reducer と View の準備が終わったので、TCA の Composition 機能を使って Reducer と View を List に組み込んでいきましょう。  
       まずは、`RepositoryRow` Reducer を `RepositoryList` Reducer に組み込んでいきます。  
-      その際に、`IdentifiedArray` と `Reducer.forEach` という新しい API に触れることになります。
+      その際に、`IdentifiedArrayOf`, `IdentifiedActionof`, `Reducer.forEach` という新しい API に触れることになります。
 
     }
     @Steps {
       @Step {
         `RepositoryRow` Reducer を `RepositoryList` Reducer に組み込んでいくためには、`State`, `Action`, `body` に対して、少し定型的な実装を行う必要があります。  
-        少しずつ理解するために `State` の実装から進めていきます。  
+        少しずつ理解するために `State` の実装から進めていきます。
+        
         TCA では、List Reducer が各 Row Reducer の集合を保持するような構造を表現する時に `IdentifiedArray` という API を利用します。    
-        ここでは詳しくは説明できませんが、この API は `Identifiable` な要素に特化したものとなっており、SwiftUI や他の部分でも Array を扱いやすくしてくれたり、TCA 内部でもその仕組みが利用されています。  
-        この API は、ほぼ Array のように利用できるため、既存の `repositories` という変数を削除しつつ、`IdentifiedArray` を利用して `RepositoryRow.State` を保持するようなコードを追加しておきましょう。
+        ここでは詳しくは説明できませんが、この API は `Identifiable` な要素に特化したものとなっており、SwiftUI や他の部分でも Array を扱いやすくしてくれたり、TCA 内部でもその仕組みが利用されていたりします。  
+        この API は、ほぼ Array のように利用できるため、既存の `repositories` という変数を削除しつつ、`IdentifiedArray` を利用して `RepositoryRow.State` を保持するようなコードを追加しておきます。  
+        `IdentiedArray` は `ID`, `Element` という 2 つの Generics を満たすことで利用できますが、普段は `Identifiable` な要素を利用した `IdentifiedArrayOf` という API を利用します。  
+        既に `RepositoryRow.State` は `Identifiable` に準拠する形で定義しているので、`IdentifiedArrayOf` を利用して State に変数を追加します。
 
         @Code(name: "RepositoryListView.swift", file: 02-03-code-0001.swift, previousFile: 02-03-code-0001-previous.swift)
         
@@ -107,14 +110,13 @@
       }
       @Step {
         次は `Action` の実装を行います。  
-        `Action` には `RepositoryRow.State.ID` と `RepositoryRow.Action` を associated value として持った case を追加します。  
-        `ID` は Swift における `Identifiable` protocol が `associatedtype` として定義しているため利用できるものになっており、複数の Row から一つの Row を特定するために必要となっています。
+        `Action` には `IdentifiedActionOf` という API を利用した case を追加します。`IdentifiedActionOf` の Generics には各 Row を表現する `RepositoryRow` を指定します。
 
         @Code(name: "RepositoryListView.swift", file: 02-03-code-0002.swift)
       }
       @Step {
         次に `body` の実装を行います。  
-        `repositories` に値を格納していた部分で `repositoryRows` に値を格納するように変更する必要があります。  
+        元々 `repositories` に値を格納していた部分で `repositoryRows` に値を格納するように変更する必要があります。  
         また TCA では Parent Reducer が Child Reducer を管理するような構造にすることによって、Parent Reducer で Child Reducer の Action のハンドリングができるようになります。  
         今回で言えば、`RepositoryList` Reducer で `RepositoryRow` Reducer を管理するため、`RepositoryRow` で起きたあらゆる Action を `RepositoryList` で簡単にハンドリングできるというメリットを得ることができます。  
         しかし、現時点においては `RepositoryRow` の Aciton を特にハンドリングしたいわけではないため、単に `Effect.none` を返すようにしておきます。
@@ -123,13 +125,12 @@
       }
       @Step {
         最後に `RepositoryList` Reducer で `RepositoryRow` Reducer を動作させるために、二つの Reducer を接続する必要があります。  
-        `RepositoryList` Reducer には複数の `RepositoryRow` Reducer が対応することとなりますが、このように複数のドメインを一つ一つ Composition する今回のようなための機能として、`Reducer.forEach` という function が用意されています。  
-        この `forEach` には、今までに定義してきた Row 用の `State` の KeyPath や `Action` の CasePath を引数に指定しつつ、クロージャに対して `RepositoryRow` Reducer を提供することで利用できます。  
+        `RepositoryList` Reducer では複数の `RepositoryRow` Reducer が管理することとなりますが、このように複数のドメインを一つ一つ Composition するための機能として、`Reducer.forEach` という function が用意されています。  
+        この `forEach` は、今までに定義してきた Row 用の `State`・`Action` の KeyPath を引数に指定しつつ、クロージャに対して `RepositoryRow` Reducer を提供することで利用できます。  
         
         @Code(name: "RepositoryListView.swift", file: 02-03-code-0004.swift)
         
-        > CasePath も Point-Free のライブラリです。Swift における struct では KeyPath の機能を利用し様々な機能を解放できていますが、enum においても同じようなことを実現できるようにするために開発されたのが、このライブラリとなっています。  
-        > CasePath は KeyPath と似たようなシンタックスで `/` operator を使って利用できます。  
+        > `Action` に指定している `KeyPath` は純粋な `KeyPath` ではなく Point-Free のライブラリである CasePath の機能を利用した `CaseKeyPath` というものになっています。Swift における struct では KeyPath の機能を利用し様々な機能を解放できていますが、enum においても同じようなことを実現できるようにするために開発されたのが、このライブラリとなっています。  
         > 詳細については、[ライブラリのリポジトリ](https://github.com/pointfreeco/swift-case-paths)等を参照してください。
       }
     }
@@ -138,7 +139,7 @@
   @Section(title: "RepositoryListView の Composition") {
     @ContentAndMedia {
       次は View を組み込んでいきましょう。  
-      各 `RepositoryRowView` を `RepositoryListView` で利用するためには、TCA に用意されている `ForEachStore` という View が利用できます。  
+      各 `RepositoryRowView` を `RepositoryListView` で利用するためには、SwiftUI の API である `ForEach` を利用できます。  
       実際に使いながら学んでいきましょう。
     }
 
@@ -152,9 +153,9 @@
       @Step {
         それでは、`RepositoryListView` に `RepositoryRowView` を組み込みます。  
         現在は SwiftUI の `ForEach` を利用して、`viewStore.repositories` をループさせ、`repository` ごとに必要な View を描画させるようなコードとなっています。  
-        しかし、今はこのループの部分で先ほど作成した `RepositoryRowView` を Repository の数だけ表示する必要があります。  
-        `RepositoryRowView` には `StoreOf<RepositoryRow>` を提供する必要がありますが、TCA に用意されている `ForEachStore` という API を `ForEach` の代わりに利用することで、各 Row 用の `StoreOf<RepositoryRow>` を手に入れることができます。  
-        この `ForEachStore` には、複数の `RepositoryRow` domain を表現する Store を提供する必要がありますが、先ほど `RepositoryList` Reducer に `RepositoryRow` Reducer を組み込んだため、Store の `scope` API を利用すれば必要な Store を構築できます。
+        ここまででコードを変更してきたため、今はこのループの部分で先ほど作成した `RepositoryRowView` を Repository の数だけ表示する必要があります。  
+        `RepositoryRowView` には `StoreOf<RepositoryRow>` を提供する必要があります。  
+        `StoreOf<RepositoryRow>` は、先ほど実装した `State` と `Action` の `repositoryRows` を `store.scope(state:action:)` という API に利用することで、手に入れることができます。
 
         @Code(name: "RepositoryListView.swift", file: 02-04-code-0002.swift)
       }
