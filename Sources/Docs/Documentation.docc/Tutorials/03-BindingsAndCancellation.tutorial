@@ -8,14 +8,15 @@
   @Section(title: "BindingReducer") {
     @ContentAndMedia {
       リポジトリ一覧画面に検索機能を追加する前に、まずは Reducer で Binding を扱えるようにしていきましょう。  
-      Pure SwiftUI では、通常 Binding を表現する際に `@Binding` を利用しますが、TCA においては `@BindingState`, `BindableAction`, `BindingAction`, `BindingReducer` という API を利用することで Binding が表現できます。
+      Pure SwiftUI では、通常 Binding を表現する際に `@Binding` を利用しますが、TCA においては `BindingAction`, `BindingReducer` という API を利用することで Binding が表現できます。
       
     }
     @Steps {
       @Step {
         まずは、`RepositoryList` Reducer に検索機能のための状態を追加します。  
         検索機能を実現するために、後ほど SwiftUI の `searchable` API を利用しますが、その API は `text` という引数に `Binding<String>` 型を要求します。  
-        TCA には Binding value を表現するための API である `@BindingState` Property Wrapper が用意されているため、これを利用して `searchable` に提供するための状態を追加します。
+        TCA の `State` においては、`Binding` を意識することなく通常通り変数を定義することができます。  
+        今回は検索用の `text` なので `query` という変数を追加しておきましょう。
         
         @Code(name: "RepositoryListView.swift", file: 03-01-code-0001.swift, previousFile: 03-01-code-0001-previous.swift)
       }
@@ -28,7 +29,7 @@
       }
       @Step {
         最後に TCA における Binding の処理を実行する核である、`BindingReducer` を `body` に組み込む必要があります。  
-        この API は `body` に組み込むだけで、先ほど追加した `@BindingState`, `BindingAction` が機能するように作られています。  
+        この API は `body` に組み込むだけで、先ほど追加した `Binding` として提供する `State` と `BindingAction` が機能するように作られています。  
         `body` では、先ほど追加した `binding` Action をハンドリングする必要がありますが、今のところは実行したい処理はないため、一旦 `none` を返すだけにしておきます。
         
         @Code(name: "RepositoryListView.swift", file: 03-01-code-0003.swift)
@@ -42,10 +43,11 @@
     }
     @Steps {
       @Step {
-        View に検索機能を追加すると説明しましたが、SwiftUI には `searchable` が用意されているため、今回はそれを利用すれば View 側の実装はほとんど完了します。  
-        `searchable` には前述の通り、`Binding<String>` を提供する必要があるため、先ほど用意した `@BindingState` を提供します。  
-        `ViewStore` 経由で `@BindingState` の projectedValue を利用する subscript が用意されており、`viewStore.$value` のようにすると `Binding<Value>` が取得できるようになっているため、それを利用します。  
-        ついでに `navigationTitle` もつけておきましょう。
+        View に検索機能を追加すると説明しましたが、SwiftUI には 検索機能を実現するための `searchable` が用意されているため、今回はそれを利用すれば View 側の実装はほとんど完了します。  
+        `searchable` には前述の通り、`Binding<String>` を提供する必要があるため、先ほど用意した `query` を提供します。  
+        `query` を `Binding<String>` として提供するためには、iOS 17 から利用できる SwiftUI の `@Bindable` を利用して `store` を宣言しておく必要があります。  
+        その形で `store` を宣言すれば、`$store.query` のようにすると `Binding<String>` を得ることができます。  
+        また、ついでに `navigationTitle` も実装しておきましょう。
 
         @Code(name: "RepositoryListView.swift", file: 03-02-code-0001.swift, previousFile: 03-02-code-0001-previous.swift)
       }
@@ -64,8 +66,8 @@
     @Steps {
       @Step {
         検索機能を実装するためには `searchable` の `text` が変更された際に、GitHub API の search エンドポイントに対してリクエストする必要があります。  
-        現在、`searchable` の `text` には `@BindingState` の `viewStore.$query` というものを指定していますが、この `query` が変更された時に API リクエストしなければいけません。  
-        TCA の Binding 系の API には、`@BindingState` の変更タイミングに介入するための方法が用意されているため、Reducer にその処理を追加してみましょう。
+        現在、`searchable` の `text` には `$store.query` を指定していますが、この `query` が変更された時に API リクエストしなければいけません。  
+        TCA の Binding 系の API には、State の変更タイミングに介入するための方法が用意されているため、Reducer にその処理を追加してみましょう。
 
         @Code(name: "RepositoryListView.swift", file: 03-03-code-0001.swift, previousFile: 03-01-code-0003.swift)
       }

@@ -5,19 +5,21 @@ import Foundation
 import IdentifiedCollections
 import SwiftUI
 
-public struct RepositoryList: Reducer {
+@Reducer
+public struct RepositoryList {
+  @ObservableState
   public struct State: Equatable {
     var repositoryRows: IdentifiedArrayOf<RepositoryRow.State> = []
     var isLoading: Bool = false
-    @BindingState var query: String = ""
+    var query: String = ""
 
     public init() {}
   }
 
-  public enum Action: Equatable, BindableAction {
+  public enum Action: BindableAction {
     case onAppear
-    case searchRepositoriesResponse(TaskResult<[Repository]>)
-    case repositoryRow(id: RepositoryRow.State.ID, action: RepositoryRow.Action)
+    case searchRepositoriesResponse(Result<[Repository]>)
+    case repositoryRow(IdentifiedActionOf<RepositoryRow>)
     case binding(BindingAction<State>)
   }
 
@@ -32,7 +34,7 @@ public struct RepositoryList: Reducer {
         return .run { send in
           await send(
             .searchRepositoriesResponse(
-              TaskResult {
+              Result {
                 let query = "composable"
                 let url = URL(
                   string: "https://api.github.com/search/repositories?q=\(query)&sort=stars"
@@ -69,16 +71,16 @@ public struct RepositoryList: Reducer {
           // TODO: Handling error
           return .none
         }
-      case .repositoryRow:
+      case .repositoryRows:
         return .none
-      case .binding(\.$query):
+      case .binding(\.query):
         // ここに query が変更された時の処理を追加していく
         return .none
       case .binding:
         return .none
       }
     }
-    .forEach(\.repositoryRows, action: /Action.repositoryRow(id:action:)) {
+    .forEach(\.repositoryRows, action: \.repositoryRows) {
       RepositoryRow()
     }
   }

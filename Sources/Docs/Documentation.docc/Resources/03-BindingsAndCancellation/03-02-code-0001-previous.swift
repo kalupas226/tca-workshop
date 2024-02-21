@@ -13,25 +13,23 @@ public struct RepositoryListView: View {
   }
 
   public var body: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
-      Group {
-        if viewStore.isLoading {
-          ProgressView()
-        } else {
-          List {
-            ForEachStore(
-              store.scope(
-                state: \.repositoryRows,
-                action: { .repositoryRow(id: $0, action: $1) }
-              ),
-              content: RepositoryRowView.init(store:)
-            )
-          }
+    Group {
+      if store.isLoading {
+        ProgressView()
+      } else {
+        List {
+          ForEach(
+            store.scope(
+              state: \.repositoryRows,
+              action: \.repositoryRows
+            ),
+            content: RepositoryRowView.init(store:)
+          )
         }
       }
-      .onAppear {
-        viewStore.send(.onAppear)
-      }
+    }
+    .onAppear {
+      store.send(.onAppear)
     }
   }
 }
