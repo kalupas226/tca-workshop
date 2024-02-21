@@ -14,7 +14,7 @@ public struct RepositoryList {
 
   public enum Action {
     case onAppear
-    case searchRepositoriesResponse(TaskResult<[Repository]>)
+    case searchRepositoriesResponse(Result<[Repository]>)
   }
 
   public init() {}
