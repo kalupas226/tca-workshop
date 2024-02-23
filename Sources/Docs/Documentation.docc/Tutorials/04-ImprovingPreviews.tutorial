@@ -8,7 +8,7 @@
 
   @Section(title: "swift-dependencies による依存関係の制御") {
     @ContentAndMedia {
-      リポジトリ一覧画面の現状の Xcode Previews の挙動を確認してみると、Previews でも実際の API リクエストが行われてしまうために、リクエストが終了するまで View のレイアウトを確認できないことがわかります。  
+      リポジトリ一覧画面の現状の Xcode Previews の挙動を確認してみると、Previews でも実際の API リクエストが行われてしまうために、リクエストが終了するまで View の見た目を確認できないことがわかります。  
       これは、アプリを起動した時と同じコードが Previews でも実行されてしまっているために起きています。  
       Previews は View や挙動をサイクル早く修正できることがメリットでもあるため、この問題を解決するために API リクエストという依存関係を制御する方法をまずは学んでいきましょう。
     }
@@ -31,7 +31,7 @@
         まず、swift-dependencies を利用するために `Dependencies` を import する必要があります。  
         そして、swift-dependencies の `DependencyKey` という protocol に Client を準拠させるために、`liveValue` を定義します。  
         `liveValue` の型は `DependencyKey` に準拠させた `GitHubAPIClient` 自身となっており、`liveValue` には実際にアプリで利用される機能を定義することになります。  
-        既にその機能は `RepositoryList` Reducer の `searchRepositories(by:)` で実装してあるので、`TaskResult` の中身を丸ごとカットアンドペーストしてきましょう。`jsonDecoder` も必要となるので、そちらも流用します。
+        既にその機能は `RepositoryList` Reducer の `searchRepositories(by:)` で実装してあるので、`Result` の中身を丸ごとカットアンドペーストしてきましょう。`jsonDecoder` も必要となるので、そちらも流用します。
 
         @Code(name: "Client.swift", file: 04-01-code-0002.swift)
         
@@ -83,7 +83,7 @@
         それでは先ほど定義した `GitHubAPIClient` を実際に Reducer で使ってみましょう。  
         先ほど少しだけ説明しましたが、Reducer では `@Dependency` という Property Wrapper を通してこの依存関係を利用できます。  
         この `@Dependency` を利用するために `Dependencies` と `GitHubAPIClient` module を import します。  
-        また、`GitHubAPIClient` の `liveValue` を実装した際に、Reducer の `searchRepositories(by:)` 内にある `TaskResult` の中身はカットしているはずなので、その部分で代わりに `GitHubAPIClient` を利用するように書き換えましょう。
+        また、`GitHubAPIClient` の `liveValue` を実装した際に、Reducer の `searchRepositories(by:)` 内にある `Result` の中身はカットしているはずなので、その部分で代わりに `GitHubAPIClient` を利用するように書き換えましょう。
 
         @Code(name: "RepositoryListView.swift", file: 04-02-code-0001.swift, previousFile: 04-02-code-0001-previous.swift)
       }
