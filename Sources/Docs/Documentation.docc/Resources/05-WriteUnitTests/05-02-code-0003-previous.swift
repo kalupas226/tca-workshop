@@ -21,7 +21,7 @@ public struct RepositoryList {
   public enum Action: BindableAction {
     case onAppear
     case searchRepositoriesResponse(Result<[Repository]>)
-    case repositoryRow(IdentifiedActionOf<RepositoryRow>)
+    case repositoryRows(IdentifiedActionOf<RepositoryRow>)
     case queryChangeDebounced
     case binding(BindingAction<State>)
   }
