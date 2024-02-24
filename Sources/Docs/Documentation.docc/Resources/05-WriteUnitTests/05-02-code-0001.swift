@@ -24,7 +24,7 @@ final class RepositoryListFeatureTests: XCTestCase {
     await store.send(.onAppear) {
       $0.isLoading = true
     }
-    await store.receive(.searchRepositoriesResponse(.success(response))) {
+    await store.receive(\.searchRepositoriesResponse) {
       $0.repositoryRows = .init(
         uniqueElements: response.map {
           .init(repository: $0)

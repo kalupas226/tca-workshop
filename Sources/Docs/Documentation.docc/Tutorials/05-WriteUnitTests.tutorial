@@ -80,7 +80,7 @@
         @Code(name: "RepositoryListFeatureTests.swift", file: 05-02-code-0001.swift, previousFile: 05-01-code-0007.swift)
       }
       @Step {
-        リポジトリ検索の処理を模倣するためには `@BindingState` として表現されている `query` に対して文字列を格納する必要があります。  
+        リポジトリ検索の処理を模倣するためには `State` の `query` に対して文字列が格納される挙動を表現する必要があります。  
         `BindingAction` には、この用途でも利用できる `set(_:_:)` が用意されているため、これを利用して検索フィールドに `test` という文字列が入力される挙動を表現してみましょう。
         
         @Code(name: "RepositoryListFeatureTests.swift", file: 05-02-code-0002.swift)

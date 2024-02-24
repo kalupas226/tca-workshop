@@ -24,7 +24,7 @@ final class RepositoryListFeatureTests: XCTestCase {
     await store.send(.onAppear) {
       $0.isLoading = true
     }
-    await store.receive(.searchRepositoriesResponse(.success(response))) {
+    await store.receive(\.searchRepositoriesResponse) {
       $0.repositoryRows = .init(
         uniqueElements: response.map {
           .init(repository: $0)
@@ -47,7 +47,7 @@ final class RepositoryListFeatureTests: XCTestCase {
       $0.gitHubAPIClient.searchRepositories = { _ in response }
     }
     
-    await store.send(.binding(.set(\.$query, "test"))) {
+    await store.send(.binding(.set(\.query, "test"))) {
       $0.query = "test"
     }
   }
