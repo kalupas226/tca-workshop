@@ -15,7 +15,7 @@
     @Steps {
       @Step {
         TCA で Alert を表現するために、まずは必要な `State` と `Action` を定義する必要があります。  
-        それぞれ `@PresentationState` Property Wrapper と `PresentationAction` という型を利用して定義していきましょう。  
+        それぞれ `@Presents` macro と `PresentationAction` という型を利用して定義していきましょう。  
         `State` は swiftui-navigation というライブラリに用意されている `AlertState` も利用して定義します。  
         `Action` は `Alert` 用の blank な enum を定義しつつ、新しい `alert` case を追加します。
 
@@ -25,7 +25,7 @@
       }
       @Step {
         次に `body` で Alert を表示するための実装を行います。  
-        `AlertState` は `TextState` という独自の API によって表現できます。  
+        `AlertState` は `TextState` という API によって表現できます。  
         ここでは、API 通信が失敗したことを簡単にユーザーに伝えられれば良いため、適当な title と message を持ったシンプルな Alert として実装しましょう。  
         また、先ほど `alert` Action を新たに追加したため、特に何も処理しない case として追加だけしておきます。
         
@@ -40,10 +40,9 @@
       }
       @Step {
         次に Alert を View で表示するために View の実装を追加します。  
-        先ほど `@PresentationState` と `PresentationAction` を利用して `State`, `Action` を定義しましたが、これを View で利用するための `alert` function が用意されています。  
-        `ForEachStore` を利用した時と同様に、`store.scope` を利用して `alert` function に必要な引数を提供します。  
-        ただ、`alert(store:)` に提供する引数は `PresentationState` 型を必要とします。  
-        `@PresentationState` は `wrappedValue` として `AlertState<Action.Alert>` を取得できるようになっていますが、`projectValue` で `PresentationState<AlertState<Action.Alert>>` を取得できるようにもなっているため、`\.$alert` とすることで、`PresentationState` 型を `alert` function に提供できます。
+        TCA には `Store` を受け付ける `alert` function が用意されており、これを利用することで Alert を表示できます。  
+        `Store` を受け付ける点以外は、Pure SwiftUI の `alert` function とほとんど使い勝手は変わりません。  
+        ここでは、`ForEach` を利用した時と同様に、`store.scope` を利用して `alert` function に必要な引数を提供します。  
 
         @Code(name: "RepositoryListView.swift", file: 06-01-code-0004.swift, previousFile: 06-01-code-0004-previous.swift)
       }
@@ -68,52 +67,45 @@
     @Steps {
       @Step {
         リポジトリ詳細画面に遷移できるようにする前に、先ほどの Alert のための実装を拡張性高いものに変更していきます。  
-        現在のままだと Alert, Confirmation Dialog, Sheet など、Navigation の対象が増える度に `State`, `Action` それぞれに `@PresentationState`, `PresentationAction` を利用したものを増やしていかなければいけません。  
+        現在のままだと Alert, Confirmation Dialog, Sheet など、Navigation の対象が増える度に `State`, `Action` それぞれに `@Presents`, `PresentationAction` を利用したものを増やしていかなければいけません。  
         Navigation を管理するための新しい Reducer を定義し、この問題を解決します。  
-        まずは、そのための `Destination` Reducer を作成します。
+        まずは、そのための `Destination` Reducer を作成します。  
+        この Reducer は struct ではなく enum で表現します。Sheet, Alert などの Navigation は複数の種類が同時に発生することはあり得ないため、enum で表現することが適切です。
 
         @Code(name: "RepositoryListView.swift", file: 06-02-code-0001.swift, previousFile: 06-01-code-0003.swift)
       }
       @Step {
-        次に `Destination` Reducer に `State` を追加します。  
-        今まで `State` は struct で表現してきましたが、enum を使って表現することもできます。  
-        そして、複数種類の Navigation は基本的に同時に発生することはあり得ないため、Navigation の状態は enum で表現することが適切です。  
-        それでは、`alert` case を持った enum の `State` を定義しましょう。  
-        この方法では、case の associated value で各 Navigation が必要とする状態を保持することができるため、よりシンプルに安全な形で Navigation の状態を表現できるというメリットもあります。
+        次に `Destination` Reducer に case を追加します。  
+        今まで Reducer には `State`, `Action`, `body` を定義してきましたが、Navigation 用の Reducer ではそれらを定義する必要はなく、Reducer enum に直接 case を定義していけば良い形になっています。  
+        それでは、先ほど実装した Alert を移植するために `alert` case を追加しましょう。  
         
         @Code(name: "RepositoryListView.swift", file: 06-02-code-0002.swift)
-      }
-      @Step {
-        `Destination` Reducer の実装に必要な `Action`, `body` をまとめて実装してしまいましょう。  
-        `alert` Action に必要な `Alert` enum は、先ほど `RepositoryList.Action.Alert` として定義していたものをそのまま持ってきます。  
-        また、今のところ Alert のために Reducer で特定の処理を実行したいわけではないため、`body` は何も実行しない `EmptyReducer` API を使って実装しておきます。
-
-        @Code(name: "RepositoryListView.swift", file: 06-02-code-0003.swift)
+        
+        > Navigation を enum で表現すると、case の associated value で各 Navigation が必要とする状態を保持することができるため、よりシンプルに安全な形で Navigation の状態を表現できるというメリットもあります。
       }
       @Step {
         元々 `RepositoryList` Reducer に直接定義していた Alert 関係の処理を `Destination` Reducer にまとめたため、`RepositoryList` Reducer の諸々を修正します。
         
-        @Code(name: "RepositoryListView.swift", file: 06-02-code-0004.swift)
+        @Code(name: "RepositoryListView.swift", file: 06-02-code-0003.swift)
       }
       @Step {
-        View も少し修正する必要があるため、`destination` を利用するように書き換えていきましょう。  
-        元々の `alert(store:)` をそのまま利用しても良いのですが、`Destination` に新しい Navigation のための case が追加された際に対応できなくなってしまうため、case を区別できる `alert(store:state:action:)` を利用するように修正します。
+        View も少し修正していきます。  
+        `RepositoryList` Reducer の `State`, `Action` に `destination` を追加したため、`alert` function の引数でも `destination` を利用するように書き換えます。
 
-        @Code(name: "RepositoryListView.swift", file: 06-02-code-0005.swift, previousFile: 06-01-code-0005.swift)
+        @Code(name: "RepositoryListView.swift", file: 06-02-code-0004.swift, previousFile: 06-01-code-0005.swift)
       }
       @Step {
         ここまでで、リポジトリ詳細画面への遷移を表現するための下準備が整いました。  
         ここからは、リポジトリ詳細画面への Push 遷移を実装していきましょう。  
-        リポジトリ詳細画面は、`RepositoryDetailView.swift` というファイル名でプロジェクト内に用意されています。基本的な実装は一通り済ませてあるので、`RepositoryDetailFeature` を import しつつ、`RepositoryDetail.State`, `RepositoryDetail.Action`, `RepositoryDetail` の実装を `Destination` Reducer で利用します。  
-        `RepositoryDetail` Reducer を `Destination` Reducer に組み込むためには、`Scope` という API を利用します。使い方は `RepositoryRow` Reducer を組み込む際に利用した `forEach` と大きくは変わりませんが、`Destination.State` は enum で表現されているため、`state` 引数にも CasePath を利用していることに注意しましょう。
+        リポジトリ詳細画面は、`RepositoryDetailView.swift` というファイル名でプロジェクト内に用意されています。基本的な実装は一通り済ませてあるので、`RepositoryDetailFeature` を import しつつ、`RepositoryDetail`の実装を `Destination` Reducer で利用するようにします。  
         
-        @Code(name: "RepositoryListView.swift", file: 06-02-code-0006.swift, previousFile: 06-02-code-0004.swift)
+        @Code(name: "RepositoryListView.swift", file: 06-02-code-0005.swift, previousFile: 06-02-code-0003.swift)
       }
       @Step {
-        Alert の場合は、Reducer で何らかの処理を実行する必要がなかったため考慮しませんでしたが、`Destination` Reducer で `RepositoryDetail` Reducer の処理を実行する必要が出てきたため、`Reducer.ifLet(_:action:destination)` を利用して `Destination` Reducer と `RepositoryList` Reducer を接続する必要があります。  
+        Alert の場合は、Reducer で何らかの処理を実行する必要がなかったため考慮しませんでしたが、`Destination` Reducer で `RepositoryDetail` Reducer の処理を実行する必要が出てきたため、`Reducer.ifLet(_:action:)` を利用して `Destination` Reducer と `RepositoryList` Reducer を接続する必要があります。  
         そのためのコードを `RepositoryList` Reducer に追加しましょう。
         
-        @Code(name: "RepositoryListView.swift", file: 06-02-code-0007.swift)
+        @Code(name: "RepositoryListView.swift", file: 06-02-code-0006.swift)
 
         > `destination` が Optional な状態として保持されており、その Optional な状態と接続するために Swift の Optional binding のような名前の `ifLet` という API を利用する必要があります。  
         > Collection に対しては `forEach`, Optional に対しては `ifLet` で接続すると覚えておくと理解しやすいかもしれません。
@@ -123,7 +115,7 @@
         `RepositoryList` Reducer は `RepositoryRow` Reducer を管理しているため、`RepositoryRow` のどんな Action もハンドリングできますが、Parent Reducer に処理を委譲することを目的とした `Delegate` という namespace を切って新しい Action を作ります。  
         そして、その Action を `rowTapped` のタイミングで送るようにします。
         
-        @Code(name: "RepositoryRowView.swift", file: 06-02-code-0008.swift, previousFile: 06-02-code-0008-previous.swift)
+        @Code(name: "RepositoryRowView.swift", file: 06-02-code-0007.swift, previousFile: 06-02-code-0007-previous.swift)
         
         > TCA は Reducer を容易に分割し結合することを強みとしていますが、分割された親子間の Reducer で何も考えずに Action をやり取りすると、コードはすぐに複雑になってしまいます。  
         > この問題を解決するための手段として、例えば今回のように `Delegate` という namespace を切るというものがあります。  
@@ -133,17 +125,17 @@
         送信した Delegate Action を Parent Reducer である `RepositoryList` Reducer 側で処理しましょう。  
         `RepositoryRow` がタップされたタイミングでリポジトリ詳細画面に遷移するようにしたいため、`State` に保持してある `destination` に `repositoryDetail` を格納します。
 
-        @Code(name: "RepositoryListView.swift", file: 06-02-code-0009.swift, previousFile: 06-02-code-0007.swift)
+        @Code(name: "RepositoryListView.swift", file: 06-02-code-0008.swift, previousFile: 06-02-code-0006.swift)
       }
       @Step {
-        最後に、`state.destination` の状態が変わったタイミングで Push 遷移が実行されるようにするために、iOS 16 から利用できる `navigationDestination` の TCA 版 API である `navigationDestination(store:state:action:destination:)` を利用して実装を追加します。  
+        最後に、`state.destination` の状態が変わったタイミングで Push 遷移が実行されるようにするために、iOS 16 から利用できる `navigationDestination` を利用して実装を追加します。  
 
-        @Code(name: "RepositoryListView.swift", file: 06-02-code-0010.swift, previousFile: 06-02-code-0010-previous.swift)
+        @Code(name: "RepositoryListView.swift", file: 06-02-code-0009.swift, previousFile: 06-02-code-0009-previous.swift)
       }
       @Step {
         この状態でアプリを実行してみれば、リポジトリ一覧画面の Row から各リポジトリ詳細画面に遷移できるようになっているはずです。確認してみましょう。
 
-        @Image(source: "06-02-image-0011.gif", alt: "リポジトリ一覧画面からリポジトリ詳細画面に遷移している図")
+        @Image(source: "06-02-image-0010.gif", alt: "リポジトリ一覧画面からリポジトリ詳細画面に遷移している図")
       }
     }
   }

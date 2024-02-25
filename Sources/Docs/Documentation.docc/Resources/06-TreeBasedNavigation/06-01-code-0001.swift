@@ -8,20 +8,22 @@ import IdentifiedCollections
 import SwiftUI
 import SwiftUINavigationCore
 
-public struct RepositoryList: Reducer {
+@Reducer
+public struct RepositoryList {
+  @ObservableState
   public struct State: Equatable {
     var repositoryRows: IdentifiedArrayOf<RepositoryRow.State> = []
     var isLoading: Bool = false
-    @BindingState var query: String = ""
-    @PresentationState var alert: AlertState<Action.Alert>?
+    var query: String = ""
+    @Presents var alert: AlertState<Action.Alert>?
 
     public init() {}
   }
 
-  public enum Action: Equatable, BindableAction {
+  public enum Action: BindableAction {
     case onAppear
-    case searchRepositoriesResponse(TaskResult<[Repository]>)
-    case repositoryRow(id: RepositoryRow.State.ID, action: RepositoryRow.Action)
+    case searchRepositoriesResponse(Result<[Repository]>)
+    case repositoryRows(IdentifiedActionOf<RepositoryRow>)
     case queryChangeDebounced
     case binding(BindingAction<State>)
     case alert(PresentationAction<Alert>)
@@ -60,9 +62,9 @@ public struct RepositoryList: Reducer {
           // TODO: Handling error
           return .none
         }
-      case .repositoryRow:
+      case .repositoryRows:
         return .none
-      case .binding(\.$query):
+      case .binding(\.query):
         return .run { send in
           await send(.queryChangeDebounced)
         }
@@ -83,7 +85,7 @@ public struct RepositoryList: Reducer {
         return .none
       }
     }
-    .forEach(\.repositoryRows, action: /Action.repositoryRow(id:action:)) {
+    .forEach(\.repositoryRows, action: \.repositoryRows) {
       RepositoryRow()
     }
   }
@@ -92,7 +94,7 @@ public struct RepositoryList: Reducer {
     .run { send in
       await send(
         .searchRepositoriesResponse(
-          TaskResult {
+          Result {
             try await gitHubAPIClient.searchRepositories(query)
           }
         )

@@ -9,20 +9,22 @@ import RepositoryDetailFeature
 import SwiftUI
 import SwiftUINavigationCore
 
-public struct RepositoryList: Reducer {
+@Reducer
+public struct RepositoryList {
+  @ObservableState
   public struct State: Equatable {
     var repositoryRows: IdentifiedArrayOf<RepositoryRow.State> = []
     var isLoading: Bool = false
-    @BindingState var query: String = ""
-    @PresentationState var destination: Destination.State?
+    var query: String = ""
+    @Presents var destination: Destination.State?
 
     public init() {}
   }
 
-  public enum Action: Equatable, BindableAction {
+  public enum Action: BindableAction {
     case onAppear
-    case searchRepositoriesResponse(TaskResult<[Repository]>)
-    case repositoryRow(id: RepositoryRow.State.ID, action: RepositoryRow.Action)
+    case searchRepositoriesResponse(Result<[Repository]>)
+    case repositoryRows(IdentifiedActionOf<RepositoryRow>)
     case queryChangeDebounced
     case binding(BindingAction<State>)
     case destination(PresentationAction<Destination.Action>)
@@ -59,9 +61,9 @@ public struct RepositoryList: Reducer {
           state.destination = .alert(.networkError)
           return .none
         }
-      case .repositoryRow:
+      case .repositoryRows:
         return .none
-      case .binding(\.$query):
+      case .binding(\.query):
         return .run { send in
           await send(.queryChangeDebounced)
         }
@@ -84,9 +86,10 @@ public struct RepositoryList: Reducer {
         return .none
       }
     }
-    .forEach(\.repositoryRows, action: /Action.repositoryRow(id:action:)) {
+    .forEach(\.repositoryRows, action: \.repositoryRows) {
       RepositoryRow()
     }
+    .ifLet(\.$destination, action: \.destination)
   }
 
   func searchRepositories(by query: String) -> Effect<Action> {
@@ -102,7 +105,7 @@ public struct RepositoryList: Reducer {
   }
 }
 
-extension AlertState where Action == RepositoryList.Destination.Action.Alert {
+extension AlertState where Action == RepositoryList.Destination.Alert {
   static let networkError = Self {
     TextState("Network Error")
   } message: {
@@ -111,23 +114,11 @@ extension AlertState where Action == RepositoryList.Destination.Action.Alert {
 }
 
 extension RepositoryList {
-  public struct Destination: Reducer {
-    public enum State: Equatable {
-      case alert(AlertState<Action.Alert>)
-      case repositoryDetail(RepositoryDetail.State)
-    }
-    
-    public enum Action: Equatable {
-      case alert(Alert)
-      case repositoryDetail(RepositoryDetail.Action)
-      
-      public enum Alert: Equatable {}
-    }
+  @Reducer
+  public enum Destination {
+    case alert(AlertState<Alert>)
+    case repositoryDetail(RepositoryDetail)
 
-    public var body: some ReducerOf<Self> {
-      Scope(state: /State.repositoryDetail, action: /Action.repositoryDetail) {
-        RepositoryDetail()
-      }
-    }
+    public enum Alert: Equatable {}
   }
 }
