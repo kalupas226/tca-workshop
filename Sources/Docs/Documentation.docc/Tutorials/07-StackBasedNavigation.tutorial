@@ -1,6 +1,6 @@
 @Tutorial(time: 20) {
   @Intro(title: "Stack-based navigation") {
-    前のチュートリアルでは、Tree-based navigation API である `navigationDestination(store:state:action:destination)` を利用することで、リポジトリ一覧画面からリポジトリ詳細画面への Push 遷移を表現しました。  
+    前のチュートリアルでは、Tree-based navigation API である `navigationDestination(item:destination)` を利用することで、リポジトリ一覧画面からリポジトリ詳細画面への Push 遷移を表現しました。  
     しかし、iOS 16 からは `NavigationStack` API の登場により Stack-based navigation という新しい Navigation の選択肢が SwiftUI に増え、これによっても Push 遷移を表現できるようになりました。
     
     このチュートリアルでは、リポジトリ詳細画面への Push 遷移を Stack-based navigation に書き換えることを通して、TCA における Stack-based navigation の実装方法を学ぶことができます。
@@ -14,15 +14,15 @@
     @Steps {
       @Step { 
         二つの Navigation API の状態管理的な違いは、Stack-based navigation API は Collection で状態を管理することに対し、Tree-based navigation API は Optional で状態を管理するというところです。  
-        `PresentationState` は `var destination: Destination.State?` のように表現していましたが、Stack-based navigation API の場合はその表現が Collection になります。  
+        `Presents` は `var destination: Destination.State?` のように表現していましたが、Stack-based navigation API の場合はその表現が Collection になります。  
         ただ、双方とも Navigation 用の Reducer を作成して、状態を管理できることに違いはないため、まずは Stack-based navigation 用の `Path` Reducer を作成しましょう。
         
         @Code(name: "RepositoryListView.swift", file: 07-01-code-0001.swift, previousFile: 07-01-code-0001-previous.swift)
       }
       @Step {
-        次に `Path` Reducer の `State`, `Action`, `body` の実装を行います。  
-        しかし、この実装に関しても Tree-based navigation API だった時と基本的には同じ実装で済ませることができるようになっているため、そのように実装しましょう。  
-        ついでに Tree-based navigation 用の `Destination` Reducer からも不要な実装を削除したり、`EmptyReducer` への置き換えを行うようにします。
+        次に `Path` Reducer の中身を実装していきます。  
+        `Path` Reducer の実装は Tree-based navigation API だった時と基本的には同じような実装で済ませることができるようになっているため、そのように実装しましょう。  
+        ついでに Tree-based navigation 用の `Destination` Reducer から不要な実装を削除しておきます。
         
         @Code(name: "RepositoryListView.swift", file: 07-01-code-0002.swift)
       }
@@ -31,7 +31,7 @@
         まずは、`State` の実装を行いましょう。  
         Stack-based navigation API においては、`StackState` というものを利用することになります。  
         `StackState` は前述したように、Collection として実装されているため、これに `append` などの操作をすることで Push 遷移の実行を表現できるようになっています。  
-        `StackState` は Generics を指定する必要があるため、そこに先ほど定義した `Path.State` を指定する形で実装します。
+        `StackState` は Generics を指定する必要があるため、そこには先ほど定義した `Path` から Macro で生成された `Path.State` を指定する形で実装します。
         
         @Code(name: "RepositoryListView.swift", file: 07-01-code-0003.swift)
       }
@@ -39,7 +39,7 @@
         次は `Action` の実装を行います。  
         `Action` では `StackAction` という API を利用します。  
         `StackAction` は Generics として `State` と `Action` を満たすことを要求します。  
-        そのため、ここでも先ほど定義した `Path` の `State`, `Action` を利用して `StackAction` を持った case を定義しましょう。  
+        そのため、ここでも先ほど定義した `Path` から Macro で生成された `State`, `Action` を利用して `StackAction` を持った case を定義しましょう。  
         `StackAction` は後で実際に利用しますが、これによって Stack 上に表示されている各画面と簡単にやり取りを行うことができるようになります。
 
         @Code(name: "RepositoryListView.swift", file: 07-01-code-0004.swift)
@@ -48,15 +48,15 @@
         `body` の実装も進めていきます。  
         まず、`Destination` から `repositoryDetail` case を取り除いたことによって発生しているコンパイルエラーを解消するために、`Destination.State` に代入していた部分で、代わりに `StackState` を利用するように修正します。  
         先ほど軽く触れたように、`StackState` は Collection であるため、`append` を利用して要素の追加を行うことができます。  
-        このように実装すれば、`@PresentationState` 利用時と同じように、Row タップ時に Push 遷移させる挙動を実現できます。
+        このように実装すれば、`@Presents` 利用時と同じように、Row タップ時に Push 遷移させる挙動を実現できます。
         
         @Code(name: "RepositoryListView.swift", file: 07-01-code-0005.swift)
       }
       @Step {
         最後に、`Path` Reducer を動作させるために、`RepositoryList` Reducer と `Path` Reducder を接続する必要があります。  
-        そのためには、`forEach(_:action:destination)` という API を利用する必要があります。  
+        そのためには、`forEach(_:action:)` という API を利用する必要があります。  
         この Action は `RepositoryList` Reducer と `RepositoryRow` Reducer を接続する際に利用した `forEach(_:action:element)` とは異なることに注意しましょう。  
-        ただし、使い勝手はほとんど同じなので、`StackState` への KeyPath, `StackAction` への CasePath, `Reducer` を指定することで実装できます。
+        ただし、使い勝手はほとんど同じで、`StackState` への KeyPath, `StackAction` への CasePath を指定することで実装できます。
 
         @Code(name: "RepositoryListView.swift", file: 07-01-code-0006.swift)
       }
@@ -66,7 +66,7 @@
   @Section(title: "Stack-based navigation API を用いた View の書き換え") {
     @ContentAndMedia {
       Reducer の実装が完了したので、次は Stack-based navigation API への置き換えを View に対して行っていきます。  
-      具体的には Tree-based navigation API だった `navigationDestination` を Stack-based navigation API である `NavigationStackStore` に置き換えていきます。
+      具体的には Tree-based navigation API だった `navigationDestination` を Stack-based navigation API である `NavigationStack` に置き換えていきます。
       }
       @Steps {
         @Step {
@@ -75,18 +75,17 @@
           @Code(name: "RepositoryListView.swift", file: 07-02-code-0001.swift, previousFile: 07-02-code-0001-previous.swift)
         }
         @Step {
-          次に Pure SwiftUI の API である `NavigationStack(root:)` を TCA の Stack-based navigation 用の API である `NavigationStackStore(_:root:destination)` に置き換えます。  
+          次に Pure SwiftUI の API である `NavigationStack(root:)` を TCA の Stack-based navigation 用の API である `NavigationStack(path:root:destination)` に置き換えます。  
           この API の第一引数には、先ほど定義した `StackState`, `StackAction` を利用した `store.scope` を渡します。  
           `root` は Pure SwiftUI に指定するものと同じで `NavigationStack` の Root 画面として表示したいもの、今で言うと List をここに渡します。  
-          最後の `destination` 引数については次に説明しますが、空の状態で実装だけしておきましょう。
+          最後の `destination` 引数については次に説明するため、空の状態で実装だけしておきましょう。
  
           @Code(name: "RepositoryListView.swift", file: 07-02-code-0002.swift)
         }
         @Step {
           `destination` 引数についての説明を後回しにしましたが、最後にその実装を行います。  
-          `destination` は、`RepositoryList.Path.State` が提供される closure となっており、その `Path.State` を switch などで分岐させて、各 case に対応した Push 遷移先を表現できるものとなっています。  
-          現在 `Path.State` には、`repositoryDetail` しか存在していないため、`state` が `repositoryDetail` だった時に `RepositoryDetailView` を提供するようなコードを書けば良いです。  
-          その際には、TCA に用意されている `CaseLet` という API を利用して、特定の case に応じた View を提供できます。
+          `destination` は、`StoreOf<RepositoryList.Path>` が提供される closure となっており、その store に生やされている `store.case` を switch などで分岐させて、各 case に対応した Push 遷移先を表現できるものとなっています。  
+          現在 `Path` には、`repositoryDetail` しか存在していないため、`store.case` が `repositoryDetail` だった時に `RepositoryDetailView` を提供するようなコードを書けば良いです。  
 
           @Code(name: "RepositoryListView.swift", file: 07-02-code-0003.swift)
         }

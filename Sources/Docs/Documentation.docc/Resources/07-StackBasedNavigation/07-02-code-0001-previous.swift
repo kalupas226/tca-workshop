@@ -10,7 +10,7 @@ import SwiftUI
 import SwiftUINavigationCore
 
 public struct RepositoryListView: View {
-  let store: StoreOf<RepositoryList>
+  @Bindable var store: StoreOf<RepositoryList>
 
   public init(store: StoreOf<RepositoryList>) {
     self.store = store
@@ -18,49 +18,43 @@ public struct RepositoryListView: View {
 
   public var body: some View {
     NavigationStack {
-      WithViewStore(store, observe: { $0 }) { viewStore in
-        Group {
-          if viewStore.isLoading {
-            ProgressView()
-          } else {
-            List {
-              ForEachStore(
-                store.scope(
-                  state: \.repositoryRows,
-                  action:  { .repositoryRow(id: $0, action: $1) }
-                ),
-                content: RepositoryRowView.init(store:)
-              )
-            }
+      Group {
+        if store.isLoading {
+          ProgressView()
+        } else {
+          List {
+            ForEach(
+              store.scope(
+                state: \.repositoryRows,
+                action: \.repositoryRows
+              ),
+              content: RepositoryRowView.init(store:)
+            )
           }
         }
-        .onAppear {
-          viewStore.send(.onAppear)
-        }
-        .navigationTitle("Repositories")
-        .searchable(
-          text: viewStore.$query,
-          placement: .navigationBarDrawer,
-          prompt: "Input query"
-        )
-        .alert(
-          store: store.scope(
-            state: \.$destination,
-            action: { .destination($0) }
-          ),
-          state: /RepositoryList.Destination.State.alert,
-          action: RepositoryList.Destination.Action.alert
-        )
-        .navigationDestination(
-          store: store.scope(
-            state: \.$destination,
-            action: { .destination($0) }
-          ),
-          state: /RepositoryList.Destination.State.repositoryDetail,
-          action: RepositoryList.Destination.Action.repositoryDetail,
-          destination: RepositoryDetailView.init(store:)
-        )
       }
+      .onAppear {
+        store.send(.onAppear)
+      }
+      .navigationTitle("Repositories")
+      .searchable(
+        text: $store.query,
+        placement: .navigationBarDrawer,
+        prompt: "Input query"
+      )
+      .alert(
+        $store.scope(
+          state: \.destination?.alert,
+          action: \.destination.alert
+        )
+      )
+      .navigationDestination(
+        item: $store.scope(
+          state: \.destination?.repositoryDetail,
+          action: \.destination.repositoryDetail
+        ),
+        destination: RepositoryDetailView.init(store:)
+      )
     }
   }
 }
