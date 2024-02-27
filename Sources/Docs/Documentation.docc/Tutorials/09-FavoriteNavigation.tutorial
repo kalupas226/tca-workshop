@@ -2,7 +2,7 @@
   @Intro(title: "お気に入りリポジトリ一覧画面と Navigation の実装") {
     「リポジトリ詳細画面へのお気に入り機能の実装」で、リポジトリをお気に入りできる機能が追加できたと思います。  
     しかし、現状のアプリではお気に入りしたリポジトリを一覧するための機能がないため、その機能を実装してみましょう。  
-    また、`TabView` や `NavigationStackStore` を使った Navigation 機能も実装してみましょう。
+    また、`TabView` や `NavigationStack` を使った Navigation 機能も実装してみましょう。
   }
   @ContentAndMedia {
     ## 機能要件
