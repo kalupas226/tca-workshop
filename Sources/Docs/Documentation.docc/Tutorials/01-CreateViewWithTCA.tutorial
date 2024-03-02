@@ -30,7 +30,7 @@
 
         @Code(name: "RepositoryListView.swift", file: 01-01-code-0002.swift)
         
-        > テストやパフォーマンスの観点でメリットがあるため、TCA において `State` は `Equatable` なものとして定義するようにします。
+        > テストで State の変化を assertion できるようにするため、TCA において `State` は `Equatable` なものとして定義することがおすすめです。
       }
       @Step {
         次に `Reducer` protocol の準拠に必要となるもう一つの要素である `Action` を実装します。  
@@ -68,7 +68,7 @@
         先ほど説明した通り、API Request は「外の世界で実行される処理」に該当するため、`Effect` を返却する形で実装します。  
         基本的には TCA に用意されている `Effect.run` を利用することになります。   
         API Request は非同期処理となりますが、基本的に TCA では Reducer において `Effect.run` の中でのみ非同期処理を実行できます。  
-        また、`Effect.run` は closure に、`Send` という型の `@MainActor` が付与された型を提供しており、これを利用して `await send(.someAction)` のような形で、任意の Action を発火できます。  
+        また、`Effect.run` は closure に `Send` という型の `@MainActor` が付与された型を提供しており、これを利用して `await send(.someAction)` のような形で、任意の Action を発火できます。  
         ここでの `Result` 内の処理は少し長くなっていますが、GitHub API の search エンドポイントに対してリクエストしているだけです。  
         後ほど、処理のリファクタリングは行います。
         
