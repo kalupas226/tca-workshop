@@ -152,7 +152,7 @@
       }
       @Step {
         それでは、`RepositoryListView` に `RepositoryRowView` を組み込みます。  
-        現在は SwiftUI の `ForEach` を利用して、`viewStore.repositories` をループさせ、`repository` ごとに必要な View を描画させるようなコードとなっています。  
+        現在は SwiftUI の `ForEach` を利用して、`store.repositories` をループさせ、`repository` ごとに必要な View を描画させるようなコードとなっています。  
         ここまででコードを変更してきたため、今はこのループの部分で先ほど作成した `RepositoryRowView` を Repository の数だけ表示する必要があります。  
         `RepositoryRowView` には `StoreOf<RepositoryRow>` を提供する必要があります。  
         `StoreOf<RepositoryRow>` は、先ほど実装した `State` と `Action` の `repositoryRows` を `store.scope(state:action:)` という API に利用することで、手に入れることができます。

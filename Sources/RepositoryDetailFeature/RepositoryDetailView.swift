@@ -5,18 +5,20 @@ import SwiftUI
 import UserDefaultsClient
 import WebKit
 
-public struct RepositoryDetail: Reducer {
+@Reducer
+public struct RepositoryDetail {
+  @ObservableState
   public struct State: Equatable {
     let repository: Repository
 
-    @BindingState var isWebViewLoading = true
+    var isWebViewLoading = true
 
     public init(repository: Repository) {
       self.repository = repository
     }
   }
   
-  public enum Action: Equatable, BindableAction {
+  public enum Action: BindableAction {
     case binding(BindingAction<State>)
   }
 
@@ -34,25 +36,23 @@ public struct RepositoryDetail: Reducer {
 }
 
 public struct RepositoryDetailView: View {
-  let store: StoreOf<RepositoryDetail>
-  
+  @Bindable var store: StoreOf<RepositoryDetail>
+
   public init(store: StoreOf<RepositoryDetail>) {
     self.store = store
   }
 
   public var body: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
-      SimpleWebView(
-        url: viewStore.repository.htmlUrl,
-        isLoading: viewStore.$isWebViewLoading
-      )
-      .overlay(alignment: .center) {
-        if viewStore.isWebViewLoading {
-          ProgressView()
-        }
+    SimpleWebView(
+      url: store.repository.htmlUrl,
+      isLoading: $store.isWebViewLoading
+    )
+    .overlay(alignment: .center) {
+      if store.isWebViewLoading {
+        ProgressView()
       }
-      .navigationBarTitleDisplayMode(.inline)
     }
+    .navigationBarTitleDisplayMode(.inline)
   }
 }
 
