@@ -9,7 +9,7 @@
   @Section(title: "RowReducer の実装") {
     @ContentAndMedia {
       今はリポジトリ一覧画面に対して、`RepositoryList` という一つの Reducer が用意されている状態ですが、この Reducer をまず分解します。  
-      具体的には、「一覧画面全体を管理する `RepositoryList` Reducer」と複数の「一覧画面の各 Row を管理する `RepositoryRow` Reducer」に分解していきます。  
+      具体的には、「一覧画面全体を管理する `RepositoryList` Reducer」と「一覧画面の各 Row を管理する `RepositoryRow` Reducer」に分解していきます。  
       いきなり一気に分解しようとしても混乱してしまうので、分解の前準備として `RepositoryRow` Reducer を実装していきましょう。
     }
     @Steps {
@@ -88,7 +88,7 @@
     @ContentAndMedia {
       Row のための Reducer と View の準備が終わったので、TCA の Composition 機能を使って Reducer と View を List に組み込んでいきましょう。  
       まずは、`RepositoryRow` Reducer を `RepositoryList` Reducer に組み込んでいきます。  
-      その際に、`IdentifiedArrayOf`, `IdentifiedActionof`, `Reducer.forEach` という新しい API に触れることになります。
+      その際に、`IdentifiedArrayOf`, `IdentifiedActionOf`, `Reducer.forEach` という新しい API に触れることになります。
 
     }
     @Steps {
@@ -125,7 +125,7 @@
       }
       @Step {
         最後に `RepositoryList` Reducer で `RepositoryRow` Reducer を動作させるために、二つの Reducer を接続する必要があります。  
-        `RepositoryList` Reducer では複数の `RepositoryRow` Reducer が管理することとなりますが、このように複数のドメインを一つ一つ Composition するための機能として、`Reducer.forEach` という function が用意されています。  
+        `RepositoryList` Reducer では複数の `RepositoryRow` Reducer を管理することとなりますが、このように複数のドメインを一つ一つ Composition するための機能として、`Reducer.forEach` という function が用意されています。  
         この `forEach` は、今までに定義してきた Row 用の `State`・`Action` の KeyPath を引数に指定しつつ、クロージャに対して `RepositoryRow` Reducer を提供することで利用できます。  
         
         @Code(name: "RepositoryListView.swift", file: 02-03-code-0004.swift)
