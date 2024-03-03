@@ -18,7 +18,7 @@ public struct RepositoryList {
 
   public enum Action {
     case onAppear
-    case searchRepositoriesResponse(Result<[Repository]>)
+    case searchRepositoriesResponse(Result<[Repository], Error>)
     case repositoryRows(IdentifiedActionOf<RepositoryRow>)
   }
 
