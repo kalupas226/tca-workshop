@@ -62,6 +62,9 @@
         > 
         > ここまででは `DependencyKey` と `TestDependencyKey` に Client を準拠させてきましたが、実は `DependencyKey` は `TestDependencyKey` に準拠しているため、`DependencyKey` にだけ準拠させるようにしても問題ないです。  
         > ただ、実装部分を明確に区切ることができたり、意識して使えばモジュール分離の観点でメリットがあるため、基本的には今回のように別々に準拠させておくと楽になると思います。
+        >
+        > また、今回のように毎回 `previewValue` と `testValue` を自分で定義する代わりに、swift-dependencies に用意されている `@DepenedencyClient` macro を利用することもできます。
+        > 後ほど余裕があれば「<doc:08-DetailFavorite>」の課題で macro の利用に取り組んでみてください。
       }
       @Step {
         最後に swift-dependencies を活用するために、`DependencyValues` という型の extension として、`gitHubAPIClient` property を定義します。  
