@@ -59,7 +59,8 @@
       @Step {
         「Unhandled actions」が起きている原因は、`onAppear` Action の発火によって API 通信が発生し、その後に `searchRepositoriesResponse` Action が発火するはずですが、その Action の Assert がテストに記述されていないためです。  
         先ほどは Action を明示的に送信するために `send` function を利用しましたが、Reducer の処理の流れで発生するはずの Action を Assert するためには `receive` function を利用します。  
-        記述方法はほとんど `send` と同様なので書いてみましょう。  
+        記述方法はほとんど `send` と同様ですが、ここでは KeyPath を引数に受け取る `receive` を利用します。
+        KeyPath を利用すると、associated value が必要な Action の case を associated value の指定なしで簡潔に記述できます。  
         この状態でテストを実行すれば、無事テストが成功するはずです。
 
         @Code(name: "RepositoryListFeatureTests.swift", file: 05-01-code-0007.swift)
@@ -81,7 +82,7 @@
       }
       @Step {
         リポジトリ検索の処理を模倣するためには `State` の `query` に対して文字列が格納される挙動を表現する必要があります。  
-        `BindingAction` には、この用途でも利用できる `set(_:_:)` が用意されているため、これを利用して検索フィールドに `test` という文字列が入力される挙動を表現してみましょう。
+        `send` には Action を表す KeyPath と、その Action に渡される値を引数に渡す function が用意されているため、これを利用して検索フィールドに `test` という文字列が入力される挙動を表現してみましょう。
         
         @Code(name: "RepositoryListFeatureTests.swift", file: 05-02-code-0002.swift)
       }

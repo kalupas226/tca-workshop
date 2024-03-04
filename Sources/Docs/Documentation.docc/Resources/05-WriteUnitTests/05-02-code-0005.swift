@@ -50,7 +50,7 @@ final class RepositoryListFeatureTests: XCTestCase {
       $0.mainQueue = testScheduler.eraseToAnyScheduler()
     }
     
-    await store.send(.binding(.set(\.query, "test"))) {
+    await store.send(\.query, "test") {
       $0.query = "test"
     }
     await testScheduler.advance(by: .seconds(0.3))
