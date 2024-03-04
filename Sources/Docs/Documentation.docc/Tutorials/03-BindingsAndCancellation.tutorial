@@ -45,11 +45,13 @@
       @Step {
         View に検索機能を追加すると説明しましたが、SwiftUI には 検索機能を実現するための `searchable` が用意されているため、今回はそれを利用すれば View 側の実装はほとんど完了します。  
         `searchable` には前述の通り、`Binding<String>` を提供する必要があるため、先ほど用意した `query` を提供します。  
-        `query` を `Binding<String>` として提供するためには、iOS 17 から利用できる SwiftUI の `@Bindable` を利用して `store` を宣言しておく必要があります。  
+        `query` を `Binding<String>` として提供するためには、iOS 17 から利用できる `@Bindable` を利用して `store` を宣言しておく必要があります。  
         その形で `store` を宣言すれば、`$store.query` のようにすると `Binding<String>` を得ることができます。  
         また、ついでに `navigationTitle` も実装しておきましょう。
 
         @Code(name: "RepositoryListView.swift", file: 03-02-code-0001.swift, previousFile: 03-02-code-0001-previous.swift)
+        
+        > `@Bindable` も iOS 17 から利用できる API であるため、iOS 16 以下をサポートしている場合は swift-perception に用意されている `@Perception.Bindable` を代わりに利用する必要があります。その API の利用方法については [Observation backport](https://pointfreeco.github.io/swift-composable-architecture/main/documentation/composablearchitecture/observationbackport) 等を参照してください。
       }
       @Step {
         `navigationTitle` と `searchable` は `NavigationStack` 配下で機能する API であるため、`NavigationStack` で View 全体を囲っておきましょう。

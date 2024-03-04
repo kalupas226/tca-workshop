@@ -118,6 +118,8 @@
         実際にこれらの API  を使って、Action に定義した `onAppear` を画面表示時に発火させるコードと、ロード状態を使って `ProgressView` を表示するコードを追加します。
 
         @Code(name: "RepositoryListView.swift", file: 01-02-code-0003.swift)
+        
+        > iOS 17 以降は Observation framework を利用できるため、特に View に追加のコードを書く必要はありませんが、iOS 16 以下をサポートしている場合は Observation の backport framework である swift-perception の `WithPerceptionTracking` で各 View を包む必要があります。ここでは詳しく説明しきれないため、詳しくは [Observation backport](https://pointfreeco.github.io/swift-composable-architecture/main/documentation/composablearchitecture/observationbackport) などを参照してください。
       }
       @Step {
         次に `isLoading` が `false` になったタイミング、つまり API Response が返ってきた場合の View を簡単に実装します。  
