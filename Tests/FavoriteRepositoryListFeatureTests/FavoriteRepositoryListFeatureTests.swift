@@ -38,7 +38,7 @@ final class FavoriteRepositoryListFeatureTests: XCTestCase {
       FavoriteRepositoryList()
     }
 
-    await store.send(.repositoryRows(.element(id: 1, action: .delegate(.rowTapped(.mock(id: 1)))))) {
+    await store.send(\.repositoryRows[id: 1].delegate.rowTapped, .mock(id: 1)) {
       $0.path = .init(
         [
           .repositoryDetail(.init(repository: .mock(id: 1)))

@@ -68,7 +68,7 @@ final class RepositoryListFeatureTests: XCTestCase {
       $0.mainQueue = testScheduler.eraseToAnyScheduler()
     }
 
-    await store.send(.binding(.set(\.query, "test"))) {
+    await store.send(\.query, "test") {
       $0.query = "test"
     }
     await testScheduler.advance(by: .seconds(0.3))
@@ -98,7 +98,7 @@ final class RepositoryListFeatureTests: XCTestCase {
       RepositoryList()
     }
 
-    await store.send(.repositoryRows(.element(id: 1, action: .delegate(.rowTapped)))) {
+    await store.send(\.repositoryRows[id: 1].delegate.rowTapped) {
       $0.path = .init(
         [
           .repositoryDetail(.init(repository: .mock(id: 1)))
