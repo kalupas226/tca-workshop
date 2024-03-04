@@ -15,14 +15,14 @@
     @Steps {
       @Step {
         まず、TCA に用意されている `Reducer` protocol に準拠した構造体を `RepositoryListView.swift` に作成します。  
-        実際には、自分で `Reducer` protocol を利用するわけではなく、TCA に用意されている Swift Macro である `@Reducer` を利用し定義することになります。  
+        実際には、自分で `Reducer` protocol を利用するわけではなく、TCA に用意されている Swift Macros である `@Reducer` を利用し定義することになります。  
         TCA に用意されている API を利用するための `ComposableArchitecture` と、この後利用することになる `Foundation` および `Repository` という構造体を利用するための `Entity` module の import も行っておきます。
 
         @Code(name: "RepositoryListView.swift", file: 01-01-code-0001.swift)
       }
       @Step {
         `Reducer` protocol の準拠に必要となる要素の一つである `State` を実装します。
-        `State` は `@ObservableState` Macro を利用して定義します。  
+        `State` は `@ObservableState` macro を利用して定義します。  
         `State` には機能に必要となる状態を定義します。基本的には struct で定義しますが enum など他の型を利用することもあります。  
         今回は基本的な状態を保持したいだけであるため、struct を利用します。  
         この後、「画面表示時に GitHub API Request を行い、そのレスポンスを受け取ってリポジトリ一覧を表示する」という挙動の実装を行います。  

@@ -31,7 +31,7 @@
         まずは、`State` の実装を行いましょう。  
         Stack-based navigation API においては、`StackState` というものを利用することになります。  
         `StackState` は前述したように、Collection として実装されているため、これに `append` などの操作をすることで Push 遷移の実行を表現できるようになっています。  
-        `StackState` は Generics を指定する必要があるため、そこには先ほど定義した `Path` から Macro で生成された `Path.State` を指定する形で実装します。
+        `StackState` は Generics を指定する必要があるため、そこには先ほど定義した `Path` から macro で生成された `Path.State` を指定する形で実装します。
         
         @Code(name: "RepositoryListView.swift", file: 07-01-code-0003.swift)
       }
@@ -39,7 +39,7 @@
         次は `Action` の実装を行います。  
         `Action` では `StackAction` という API を利用します。  
         `StackAction` は Generics として `State` と `Action` を満たすことを要求します。  
-        そのため、ここでも先ほど定義した `Path` から Macro で生成された `State`, `Action` を利用して `StackAction` を持った case を定義しましょう。  
+        そのため、ここでも先ほど定義した `Path` から macro で生成された `State`, `Action` を利用して `StackAction` を持った case を定義しましょう。  
         `StackAction` は後で実際に利用しますが、これによって Stack 上に表示されている各画面と簡単にやり取りを行うことができるようになります。
 
         @Code(name: "RepositoryListView.swift", file: 07-01-code-0004.swift)
