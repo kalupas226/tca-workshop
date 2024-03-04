@@ -96,7 +96,7 @@ public struct RepositoryList {
     .run { send in
       await send(
         .searchRepositoriesResponse(
-          TaskResult {
+          Result {
             try await gitHubAPIClient.searchRepositories(query)
           }
         )
