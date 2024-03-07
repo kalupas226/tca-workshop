@@ -47,7 +47,7 @@ final class RepositoryListFeatureTests: XCTestCase {
       $0.gitHubAPIClient.searchRepositories = { _ in response }
     }
     
-    await store.send(\.query, "test") {
+    await store.send(\.binding.query, "test") {
       $0.query = "test"
     }
   }
