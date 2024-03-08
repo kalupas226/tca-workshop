@@ -37,7 +37,7 @@
       }
       @Step {
         この状態でテストを実行してみると、テストが失敗してしまいます。  
-        TCA はテスト結果をわかりやすく表示できることも特徴であるため、その失敗結果を見てみると「Unhandled actions」と「Unimplemented」というエラーがあることがわかります。  
+        TCA は、テストが失敗した原因が理解しやすい形で表示してくれます。その失敗結果を見てみると「Unhandled actions」と「Unimplemented」というエラーがあることがわかります。  
         「Unhandled actions」は、本来発生するはずの Action をテストで Assert できていないため発生しています。  
         「Unimplemented」は、`onAppear` の処理中に発生する API 通信で `GitHubAPIClient` が利用され、その依存関係が先ほど実装した `testValue` の実装で動作しているために発生しています。`testValue` の実装は、前に説明したように `unimplemented` で提供されているためです。  
         このように、`unimplemented` を利用すれば、依存関係の上書きをテスト作成側に強制することができ、例えば意図していない依存関係が呼ばれていることにテストで気づくこともできます。
@@ -45,7 +45,7 @@
         @Image(source: "05-01-image-0004.png", alt: "テストが二つの原因で失敗している図")
       }
       @Step {
-        それでは、先に「Unimplemented」で失敗している原因となっている、`GitHubAPIClient` の実装をテスト用に上書きしていきましょう。  
+        それでは、先に「Unimplemented」の原因となっている、`GitHubAPIClient` の実装をテスト用に上書きしていきましょう。  
         Preview の実装時に `withDependencies` を使って依存関係を上書きしましたが、`TestStore` でも同じことができるため、同じように適当な mock で依存関係を上書きしてみましょう。
 
         @Code(name: "RepositoryListFeatureTests.swift", file: 05-01-code-0005.swift)
@@ -90,7 +90,7 @@
       そのため、現状のテストコードでテストを実行すると、その挙動を Assert するためのコードを書いていないため、テストに失敗するはずです。
 
       @Step {
-        仮にこのまま API 通信のレスポンスを受け取るテストコードを書いたとしても、テストは同じように失敗してしまいます。  
+        仮にこのまま API 通信のレスポンスを受け取るテストコードを書いたとしても、テストは失敗してしまいます。  
         原因は、0.3 秒経過しないと API 通信が発火しないコードとなっているためです。  
         この問題を解決するためには、元の実装を少し修正する必要があります。  
         現在は、`DispatchQueue.main` を指定して 0.3 秒の `debounce` を表現していますが、`DispatchQueue.main` を直接指定してしまっているために、テストでこの依存関係を制御できない状態となっています。  
