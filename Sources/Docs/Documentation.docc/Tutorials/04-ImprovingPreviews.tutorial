@@ -49,6 +49,7 @@
         
         > `previewValue` は Xcode Previews のための依存関係であるため、基本的には何もしない実装 (no operation) に近い形で提供することが推奨されます。  
         > 敢えて何もしない実装にしておくことで、各 Previews で依存関係を上書きさせる必要がある状態にすることができ、各 Previews でどんなデータを表示したいかを明示的にすることができます。(依存関係の上書きについては後ほど説明します)  
+        > 例えば、ここで `fatalError` を利用して値を提供したりすると Previews はクラッシュしてしまうため、できる限り意味を持たない値にしておくことが重要です。
       }
       @Step {
         次は、`TestDependencyKey` に準拠させるためのもう一つ要素である `testValue` を実装しましょう。  
@@ -68,7 +69,7 @@
       }
       @Step {
         最後に swift-dependencies を活用するために、`DependencyValues` という型の extension として、`gitHubAPIClient` property を定義します。  
-        ここまでの手順を終えることによって、各モジュールの Reducer からは `@Dependency(\.gitHubAPIClient)` という形で依存関係が利用できるようになります。
+        ここまでの手順を終えることによって、各モジュールの Reducer からは `@Dependency(\.gitHubAPIClient)` のような形で依存関係が利用できるようになります。
         
         @Code(name: "Client.swift", file: 04-01-code-0005.swift)
         
@@ -79,7 +80,7 @@
 
   @Section(title: "Xcode Previews の挙動の改善") {
     @ContentAndMedia {
-      swift-dependencies を利用して依存関係を制御できるようになったので、次は実際に依存関係を制御して、Xcode Previews で自由な状態の View を Preview できるようにしてみましょう。
+      swift-dependencies を利用して依存関係を制御できるようになったので、次は実際に依存関係を制御して、Xcode Previews で特定の状態の View を Preview できるようにしてみましょう。
     }
     @Steps {
       @Step {
