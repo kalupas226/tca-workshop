@@ -8,14 +8,14 @@
   @Section(title: "BindingReducer") {
     @ContentAndMedia {
       リポジトリ一覧画面に検索機能を追加する前に、まずは Reducer で Binding を扱えるようにしていきましょう。  
-      Pure SwiftUI では、通常 Binding を表現する際に `@Binding` を利用しますが、TCA においては `BindingAction`, `BindingReducer` という API を利用することで Binding が表現できます。
+      Pure SwiftUI では、通常 Binding value を提供する際に `@Bindable` などの API を利用しますが、TCA においてはそれらに加えて `BindingAction`, `BindingReducer` という API を Reducer で利用することで Binding が表現できます。
       
     }
     @Steps {
       @Step {
         まずは、`RepositoryList` Reducer に検索機能のための状態を追加します。  
         検索機能を実現するために、後ほど SwiftUI の `searchable` API を利用しますが、その API は `text` という引数に `Binding<String>` 型を要求します。  
-        TCA の `State` においては、`Binding` を意識することなく通常通り変数を定義することができます。  
+        TCA の `State` においては、`@ObservableState` を利用していれば Binding value を意識することなく通常通り変数を定義することができます。  
         今回は検索用の `text` なので `query` という変数を追加しておきましょう。
         
         @Code(name: "RepositoryListView.swift", file: 03-01-code-0001.swift, previousFile: 03-01-code-0001-previous.swift)
@@ -29,8 +29,8 @@
       }
       @Step {
         最後に TCA における Binding の処理を実行する核である、`BindingReducer` を `body` に組み込む必要があります。  
-        この API は `body` に組み込むだけで、先ほど追加した `Binding` として提供する `State` と `BindingAction` が機能するように作られています。  
-        `body` では、先ほど追加した `binding` Action をハンドリングする必要がありますが、今のところは実行したい処理はないため、一旦 `none` を返すだけにしておきます。
+        この API は `body` に組み込むだけで、先ほど追加した Binding value として提供する `State` と `BindingAction` が機能するように作られています。  
+        `body` では、先ほど Action に追加した `binding` case をハンドリングする必要がありますが、今のところは実行したい処理はないため、一旦 `none` を返すだけにしておきます。
         
         @Code(name: "RepositoryListView.swift", file: 03-01-code-0003.swift)
       }
@@ -80,17 +80,17 @@
         
         @Code(name: "RepositoryListView.swift", file: 03-03-code-0002.swift)
         
-        > TCA で共通処理を切り出す際は、Action を増やすのではなく、今回のように function を作ってそこにまとめるようにしましょう。  
+        > TCA で共通処理を切り出す際は、Action を無闇に増やすのではなく、今回のように function を作ってそこにまとめるようにしましょう。  
         > TCA において Action を send する行為は、決してコストが低いものではなく、Action を send しなくても良いようにできるのであればそれがベターです。  
         > 可読性とのバランスも考慮する必要がありますが、TCA を利用する際はそのことを頭に入れながら開発しましょう。
       }
-      ここまでで `query` を入力する度にリポジトリ検索して、それがリストに反映されるような機能を作ることができました。  
+      ここまでで `query` を入力する度にリポジトリ検索して、その結果がリストに反映されるような機能を作ることができました。  
       しかし、現状の実装のままだと `query` を少しでも入力する度に API リクエストが実行されてしまうようになっており、通信コスト的にもサーバー側的にもあまり良いとは言えない状況になっています。 
       @Step {
         `query` 入力の度に API リクエストするのではなく、`query` 入力から 0.3 秒経つごとにリクエストするような実装に書き換えて、問題を解決しましょう。  
-        このような挙動のことを debounce と呼んだりしますが、TCA には `Effect.debounce` が用意されているため、これを `Effect.run` につけてあげると簡単にその挙動を実装できます。  
+        このような挙動のことを debounce と呼んだりしますが、TCA には `Effect.debounce` が用意されているため、これを `Effect.run` に付けると簡単にその挙動を実装できます。  
         `debounce` には `Hashable` な `id` が必要となるため、そのための enum を用意します。  
-        また、`debounce` の挙動を実現するために、一つ Action も追加しましょう。
+        また、`debounce` の挙動を実現するために、`queryChangeDebounced` という Action も追加しましょう。
         
         @Code(name: "RepositoryListView.swift", file: 03-03-code-0003.swift)
 
