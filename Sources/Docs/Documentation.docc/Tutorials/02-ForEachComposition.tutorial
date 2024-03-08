@@ -119,7 +119,7 @@
         元々 `repositories` に値を格納していた部分で `repositoryRows` に値を格納するように変更する必要があります。  
         また TCA では Parent Reducer が Child Reducer を管理するような構造にすることによって、Parent Reducer で Child Reducer の Action のハンドリングができるようになります。  
         今回で言えば、`RepositoryList` Reducer で `RepositoryRow` Reducer を管理するため、`RepositoryRow` で起きたあらゆる Action を `RepositoryList` で簡単にハンドリングできるというメリットを得ることができます。  
-        しかし、現時点においては `RepositoryRow` の Aciton を特にハンドリングしたいわけではないため、単に `Effect.none` を返すようにしておきます。
+        しかし、現時点においては `RepositoryRow` の Aciton を特にハンドリングしたいわけではないため、単に `repositoryRows` では `Effect.none` を返すようにしておきます。
 
         @Code(name: "RepositoryListView.swift", file: 02-03-code-0003.swift)
       }
@@ -152,12 +152,14 @@
       }
       @Step {
         それでは、`RepositoryListView` に `RepositoryRowView` を組み込みます。  
-        現在は SwiftUI の `ForEach` を利用して、`store.repositories` をループさせ、`repository` ごとに必要な View を描画させるようなコードとなっています。  
-        ここまででコードを変更してきたため、今はこのループの部分で先ほど作成した `RepositoryRowView` を Repository の数だけ表示する必要があります。  
-        `RepositoryRowView` には `StoreOf<RepositoryRow>` を提供する必要があります。  
-        `StoreOf<RepositoryRow>` は、先ほど実装した `State` と `Action` の `repositoryRows` を `store.scope(state:action:)` という API に利用することで、手に入れることができます。
+        元々は SwiftUI の `ForEach` を利用して、`store.repositories` をループさせ、`repository` ごとに必要な View を描画させるようなコードとなっていました。  
+        この `ForEach` の部分で先ほど作成した「`StoreOf<RepositoryRow>` を利用した `RepositoryRowView`」を Repository の数だけ表示する必要があります。  
+        `StoreOf<RepositoryRow>` は、`State`・`Action` それぞれに実装した `repositoryRows` を `store.scope(state:action:)` という API に提供することで得ることができます。
 
         @Code(name: "RepositoryListView.swift", file: 02-04-code-0002.swift)
+        
+        > `store.scope` を渡している `ForEach` は Pure SwiftUI の API であり、通常 `ForEach` を利用する際と同じように `Array.enumerated` などを利用することもできます。
+        > 詳しくは「[Replacing ForEachStore with ForEach](https://pointfreeco.github.io/swift-composable-architecture/main/documentation/composablearchitecture/migratingto1.7/#Replacing-ForEachStore-with-ForEach)」の Tip を参照してください。
       }
       @Step {
         ここまで実装すれば、リファクタリング前の挙動と同じアプリが起動できるはずです。  
