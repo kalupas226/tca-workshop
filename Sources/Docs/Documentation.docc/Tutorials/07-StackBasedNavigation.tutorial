@@ -56,7 +56,7 @@
         最後に、`Path` Reducer を動作させるために、`RepositoryList` Reducer と `Path` Reducder を接続する必要があります。  
         そのためには、`forEach(_:action:)` という API を利用する必要があります。  
         この Action は `RepositoryList` Reducer と `RepositoryRow` Reducer を接続する際に利用した `forEach(_:action:element)` とは異なることに注意しましょう。  
-        ただし、使い勝手はほとんど同じで、`StackState` への KeyPath, `StackAction` への CasePath を指定することで実装できます。
+        ただし、使い勝手はほとんど同じで、`StackState` への KeyPath, `StackAction` への CaseKeyPath を指定することで実装できます。
 
         @Code(name: "RepositoryListView.swift", file: 07-01-code-0006.swift)
       }
