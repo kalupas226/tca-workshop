@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
   name: "TCAWorkshop",
-  platforms: [.iOS(.v17)],
+  platforms: [.iOS(.v17), .macOS(.v10_15)],
   products: [
     .library(name: "AppFeature", targets: ["AppFeature"]),
     .library(name: "Docs", targets: ["Docs"]),
