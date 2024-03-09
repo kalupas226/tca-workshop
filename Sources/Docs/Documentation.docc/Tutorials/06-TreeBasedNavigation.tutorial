@@ -40,9 +40,9 @@
       }
       @Step {
         次に Alert を View で表示するために View の実装を追加します。  
-        TCA には `Store` を受け付ける `alert` function が用意されており、これを利用することで Alert を表示できます。  
-        `Store` を受け付ける点以外は、Pure SwiftUI の `alert` function とほとんど使い勝手は変わりません。  
-        ここでは、`ForEach` を利用した時と同様に、`store.scope` を利用して `alert` function に必要な引数を提供します。  
+        TCA には `Store` を受け付ける `alert` modifier が用意されており、これを利用することで Alert を表示できます。  
+        `Store` を受け付ける点以外は、Pure SwiftUI の `alert` modifier とほとんど使い勝手は変わりません。  
+        ここでは、`ForEach` を利用した時と同様に、`store.scope` を利用して `alert` modifier に必要な引数を提供します。  
 
         @Code(name: "RepositoryListView.swift", file: 06-01-code-0004.swift, previousFile: 06-01-code-0004-previous.swift)
       }
@@ -95,7 +95,7 @@
       }
       @Step {
         View も少し修正していきます。  
-        `RepositoryList` Reducer の `State`, `Action` に `destination` を追加したため、`alert` function の引数でも `destination` を利用するように書き換えます。
+        `RepositoryList` Reducer の `State`, `Action` に `destination` を追加したため、`alert` modifier の引数でも `destination` を利用するように書き換えます。
 
         @Code(name: "RepositoryListView.swift", file: 06-02-code-0004.swift, previousFile: 06-01-code-0005.swift)
       }
