@@ -54,7 +54,7 @@ final class RepositoryListFeatureTests: XCTestCase {
       $0.query = "test"
     }
     await testScheduler.advance(by: .seconds(0.3))
-    await store.receive(.queryChangeDebounced) {
+    await store.receive(\.queryChangeDebounced) {
       $0.isLoading = true
     }
     await store.receive(\.searchRepositoriesResponse) {
