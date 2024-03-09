@@ -122,7 +122,7 @@ extension AlertState where Action == RepositoryList.Destination.Alert {
 }
 
 extension RepositoryList {
-  @Reducer
+  @Reducer(state: .equatable)
   public enum Destination {
     case alert(AlertState<Alert>)
     // repositoryDetail case の削除
@@ -130,7 +130,7 @@ extension RepositoryList {
     public enum Alert: Equatable {}
   }
   
-  @Reducer
+  @Reducer(state: .equatable)
   public enum Path {
     case repositoryDetail(RepositoryDetail)
   }

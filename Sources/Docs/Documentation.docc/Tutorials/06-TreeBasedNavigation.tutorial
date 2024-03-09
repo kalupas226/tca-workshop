@@ -70,9 +70,14 @@
         現在のままだと Alert, Confirmation Dialog, Sheet など、Navigation の対象が増える度に `State`, `Action` それぞれに `@Presents`, `PresentationAction` を利用したものを増やしていかなければいけません。  
         Navigation を管理するための新しい Reducer を定義し、この問題を解決します。  
         まずは、そのための `Destination` Reducer を作成します。  
-        この Reducer は struct ではなく enum で表現します。Sheet, Alert などの Navigation は複数の種類が同時に発生することはあり得ないため、enum で表現することが適切です。
+        この Reducer は struct ではなく enum で表現します。Sheet, Alert などの Navigation は複数の種類が同時に発生することはあり得ないため、enum で表現することが適切です。  
+        また、ここで利用する Reducer macro では `state` に `.equatable` を指定することで、macro によって生成される Reducer の `State` が `Equatable` になるようにします。
+        これによって `Destination` を利用する Parent State の Equatable を保つことができます。
 
         @Code(name: "RepositoryListView.swift", file: 06-02-code-0001.swift, previousFile: 06-01-code-0003.swift)
+        
+        > Reducer macro の `state` は Swift のバグを回避する方法として用意されているものです。(将来不要となる可能性はあります)  
+        > 詳しくは [Synthesizing protocol conformances on State and Action](https://pointfreeco.github.io/swift-composable-architecture/main/documentation/composablearchitecture/reducers#Synthesizing-protocol-conformances-on-State-and-Action) を参照してください。
       }
       @Step {
         次に `Destination` Reducer に case を追加します。  

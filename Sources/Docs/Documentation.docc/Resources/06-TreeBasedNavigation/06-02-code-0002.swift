@@ -114,7 +114,7 @@ extension AlertState where Action == RepositoryList.Action.Alert {
 }
 
 extension RepositoryList {
-  @Reducer
+  @Reducer(state: .equatable)
   public enum Destination {
     case alert(AlertState<Alert>)
 
