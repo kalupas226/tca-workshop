@@ -1,26 +1,27 @@
-@Article(time: 30) {
+@Article(time: 40) {
   @Intro(title: "リポジトリ詳細画面のお気に入り機能の実装") {
     今まで作ったリポジトリ一覧画面とリポジトリ詳細画面があるアプリに、自分の力で機能を追加していってみましょう。  
     ここでは、リポジトリ詳細画面にリポジトリのお気に入り機能を追加することを目標とします。
   }
   @ContentAndMedia {
-    ## 機能要件
+    ## 実装するもの
     
-    以下の機能を満たすアプリを作ってみましょう。
+    ここまでで作成したアプリに以下の機能を追加してみましょう。
 
     - リポジトリ詳細画面の `Toolbar` の `topBarTrailing` の位置に heart icon がある
       - heart icon はリポジトリをお気に入りに登録するためのボタンとして機能する
     - heart icon の見た目は以下のようになる
       - リポジトリがまだお気に入りに登録されていない場合: SF Symbols における `heart`
       - リポジトリが既にお気に入りに登録されている場合: SF Symbols における `heart.fill`
-    - リポジトリがお気に入りかどうかの状態は、簡単のため UserDefaults に保存する
-    - UserDefaults からの値の取得・保存などのアクセスを管理するための `UserDefaultsClient` という struct を作成し、Reducer からそれを `@Dependency` として扱えるようにする
-      - `UserDefaultsClient` は `UserDefaultsClient/Client.swift` で実装されること
+    - リポジトリがお気に入りかどうかの状態は、File storage に保存する
+      - [Sharing state](https://pointfreeco.github.io/swift-composable-architecture/main/documentation/composablearchitecture/sharingstate) の Persisted shared state に記載されている File storage を利用して実現する
 
-    `UserDefaultsClient` の実装については、Point-Free が開発している TCA 製のゲームアプリである [isowords のコード](https://github.com/pointfreeco/isowords/tree/40d59a899bbe54810bb0d7af0f3b72379c56bafb/Sources/UserDefaultsClient)に参考になる部分があると思います。
+    また、コードについて以下のリファクタリングも行ってみましょう。
     
-    また、現状 `GitHubAPIClient` は GitHub の PAT を `Bundle.main.infoDictionary` から直接取得する実装となっていますが、この取得部分も `@Dependency` として管理することができます。取得部分を `BuildConfig/Client.swift` に実装してみましょう。  
-    さらに、TCA の Repository にある [Discussion](https://github.com/pointfreeco/swift-composable-architecture/discussions/1858) などを参考に、作成した `@Dependency` を `GitHubAPIClient` で利用するように修正したり、swift-dependencies に用意されている [@DependencyClient](https://swiftpackageindex.com/pointfreeco/swift-dependencies/main/documentation/dependencies/designingdependencies#DependencyClient-macro) macro を Client で利用するように書き換えてみましょう。
+    - 現状 `GitHubAPIClient` で `Bundle.main.infoDictionary` から PAT を取得している部分を `BuildConfig/Client.swift` に `BuildConfig` という命名の Client として実装する
+    - `GitHubAPIClient` で `BuildConfig` を `@Dependency` 経由で利用し、PAT を取得している部分の処理を置き換える
+    　　- TCA の Repository にある [Discussion](https://github.com/pointfreeco/swift-composable-architecture/discussions/1858) などが参考になる
+    - swift-dependencies に用意されている [@DependencyClient](https://swiftpackageindex.com/pointfreeco/swift-dependencies/main/documentation/dependencies/designingdependencies#DependencyClient-macro) macro を 各種 Client で利用する
 
     @Image(source: "08-image-01.gif", alt: "リポジトリ詳細画面のお気に入り機能の図")
   }

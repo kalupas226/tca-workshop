@@ -78,7 +78,6 @@ let package = Package(
       dependencies: [
         "Entity",
         "GitHubAPIClient",
-        "UserDefaultsClient",
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
         .product(name: "Dependencies", package: "swift-dependencies"),
       ]
@@ -96,7 +95,6 @@ let package = Package(
       dependencies: [
         "Entity",
         "RepositoryDetailFeature",
-        "UserDefaultsClient",
         .product(name: "CasePaths", package: "swift-case-paths"),
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
         .product(name: "Dependencies", package: "swift-dependencies"),
@@ -114,14 +112,6 @@ let package = Package(
       name: "GitHubAPIClient",
       dependencies: [
         "BuildConfig",
-        "Entity",
-        .product(name: "Dependencies", package: "swift-dependencies"),
-        .product(name: "XCTestDynamicOverlay", package: "xctest-dynamic-overlay"),
-      ]
-    ),
-    .target(
-      name: "UserDefaultsClient",
-      dependencies: [
         "Entity",
         .product(name: "Dependencies", package: "swift-dependencies"),
         .product(name: "XCTestDynamicOverlay", package: "xctest-dynamic-overlay"),
