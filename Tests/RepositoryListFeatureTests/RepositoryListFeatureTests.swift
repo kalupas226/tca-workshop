@@ -7,7 +7,7 @@ import XCTest
 
 @MainActor
 final class RepositoryListFeatureTests: XCTestCase {
-  func testOnAppear_SeachSucceeded() async {
+  func testOnAppear_SearchSucceeded() async {
     let response: [Repository] = (1...10).map {
       .mock(id: $0)
     }

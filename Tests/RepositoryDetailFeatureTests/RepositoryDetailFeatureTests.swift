@@ -11,7 +11,6 @@ final class RepositoryDetailFeatureTests: XCTestCase {
     @Shared(.favoriteRepositories) var favoriteRepositories = [
       repository
     ]
-    favoriteRepositories = [repository]
 
     let store = TestStore(
       initialState: RepositoryDetail.State(
@@ -33,11 +32,10 @@ final class RepositoryDetailFeatureTests: XCTestCase {
   
   func testRepositoryIsNotFavorited() async {
     @Shared(.favoriteRepositories) var favoriteRepositories = []
-    favoriteRepositories = []
 
     let store = TestStore(
       initialState: RepositoryDetail.State(
-        repository: .mock(id: 2)
+        repository: .mock(id: 1)
       )
     ) {
       RepositoryDetail()
@@ -47,7 +45,7 @@ final class RepositoryDetailFeatureTests: XCTestCase {
     
     await store.send(.favoriteButtonTapped) {
       $0.favoriteRepositories = [
-        .mock(id: 2)
+        .mock(id: 1)
       ]
       $0.isFavoriteRepository = true
     }
