@@ -8,17 +8,15 @@ import XCTest
 final class FavoriteRepositoryListFeatureTests: XCTestCase {
   func testOnAppear() async {
     let repositories: [Repository] = (1...10).map { .mock(id: $0) }
+    @Shared(.favoriteRepositories) var favoriteRepositories = .init(
+      uniqueElements: repositories
+    )
     let store = TestStore(
       initialState: FavoriteRepositoryList.State()
     ) {
       FavoriteRepositoryList()
-    } withDependencies: {
-      $0.userDefaultsClient.dataForKey = { key in
-        XCTAssertNoDifference(key, "favoriteRepositories")
-        return try! JSONEncoder().encode(repositories)
-      }
     }
-    
+
     await store.send(.onAppear) {
       $0.repositoryRows = .init(
         uniqueElements: repositories.map {
@@ -29,15 +27,20 @@ final class FavoriteRepositoryListFeatureTests: XCTestCase {
   }
   
   func testRepositoryRowTapped() async {
-    var state = FavoriteRepositoryList.State()
-    state.repositoryRows.append(.init(repository: .mock(id: 1)))
-    
+    @Shared(.favoriteRepositories) var favoriteRepositories = [
+      .mock(id: 1)
+    ]
     let store = TestStore(
-      initialState: state
+      initialState: FavoriteRepositoryList.State()
     ) {
       FavoriteRepositoryList()
     }
 
+    await store.send(.onAppear) {
+      $0.repositoryRows = [
+        .init(repository: .mock(id: 1)),
+      ]
+    }
     await store.send(\.repositoryRows[id: 1].delegate.rowTapped, .mock(id: 1)) {
       $0.path = .init(
         [
@@ -46,28 +49,24 @@ final class FavoriteRepositoryListFeatureTests: XCTestCase {
       )
     }
   }
-  
-  func testRepositoryRowDeleted() async {
-    let repository = Repository.mock(id: 1)
-    var state = FavoriteRepositoryList.State()
-    state.repositoryRows.append(.init(repository: repository))
 
+  func testRepositoryRowDeleted() async {
+    @Shared(.favoriteRepositories) var favoriteRepositories = [
+      .mock(id: 1)
+    ]
     let store = TestStore(
-      initialState: state
+      initialState: FavoriteRepositoryList.State()
     ) {
       FavoriteRepositoryList()
-    } withDependencies: {
-      $0.userDefaultsClient.dataForKey = { key in
-        XCTAssertNoDifference(key, "favoriteRepositories")
-        return try! JSONEncoder().encode([repository])
-      }
-      $0.userDefaultsClient.setData = { data, key in
-        XCTAssertNoDifference(key, "favoriteRepositories")
-        XCTAssertNoDifference([], try! JSONDecoder().decode([Repository].self, from: data!))
-      }
     }
-    
+
+    await store.send(.onAppear) {
+      $0.repositoryRows = [
+        .init(repository: .mock(id: 1)),
+      ]
+    }
     await store.send(.delete([0])) {
+      $0.favoriteRepositories = []
       $0.repositoryRows = []
     }
   }

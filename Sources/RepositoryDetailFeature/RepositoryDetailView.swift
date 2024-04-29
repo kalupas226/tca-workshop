@@ -2,14 +2,15 @@ import ComposableArchitecture
 import Dependencies
 import Entity
 import GitHubAPIClient
+import PersistenceKeys
 import SwiftUI
-import UserDefaultsClient
 import WebKit
 
 @Reducer
 public struct RepositoryDetail {
   @ObservableState
   public struct State: Equatable {
+    @Shared(.favoriteRepositories) var favoriteRepositories
     let repository: Repository
 
     var isFavoriteRepository = false
@@ -28,27 +29,20 @@ public struct RepositoryDetail {
 
   public init() {}
 
-  @Dependency(\.userDefaultsClient) var userDefaultsClient
-
   public var body: some ReducerOf<Self> {
     BindingReducer()
     Reduce { state, action in
       switch action {
       case .onAppear:
-        let repositories = userDefaultsClient.getFavoriteRepositories()
-        if repositories.contains(where: { $0.id == state.repository.id }) {
+        if state.favoriteRepositories[id: state.repository.id] != nil {
           state.isFavoriteRepository = true
         }
         return .none
       case .favoriteButtonTapped:
         if state.isFavoriteRepository {
-          userDefaultsClient.deleteFavoriteRepository(
-            state.repository.id
-          )
+          state.favoriteRepositories.remove(id: state.repository.id)
         } else {
-          userDefaultsClient.addFavoriteRepository(
-            state.repository
-          )
+          state.favoriteRepositories.append(state.repository)
         }
         state.isFavoriteRepository.toggle()
         return .none

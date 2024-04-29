@@ -3,17 +3,18 @@ import ComposableArchitecture
 import Dependencies
 import Entity
 import IdentifiedCollections
+import PersistenceKeys
 import RepositoryDetailFeature
 import SwiftUI
-import UserDefaultsClient
 
 @Reducer
 public struct FavoriteRepositoryList {
   @ObservableState
   public struct State: Equatable {
+    @Shared(.favoriteRepositories) var favoriteRepositories
     var repositoryRows: IdentifiedArrayOf<RepositoryRow.State> = []
     var path = StackState<Path.State>()
-    
+
     public init() {}
   }
 
@@ -23,8 +24,6 @@ public struct FavoriteRepositoryList {
     case repositoryRows(IdentifiedActionOf<RepositoryRow>)
     case path(StackAction<Path.State, Path.Action>)
   }
-  
-  @Dependency(\.userDefaultsClient) var userDefaultsClient
 
   public init() {}
 
@@ -33,22 +32,16 @@ public struct FavoriteRepositoryList {
       switch action {
       case .onAppear:
         state.repositoryRows = .init(
-          uniqueElements: userDefaultsClient.getFavoriteRepositories().map {
+          uniqueElements: state.favoriteRepositories.map {
             .init(repository: $0)
           }
         )
         return .none
       case let .delete(indexSet):
-        for index in indexSet {
-          userDefaultsClient.deleteFavoriteRepository(
-            state.repositoryRows[index].id
-          )
-          state.repositoryRows.remove(
-            id: state.repositoryRows[index].id
-          )
-        }
+        state.repositoryRows.remove(atOffsets: indexSet)
+        state.favoriteRepositories.remove(atOffsets: indexSet)
         return .none
-      case let .repositoryRows(.element(_, action: .delegate(.rowTapped(repository)))):
+      case let .repositoryRows(.element(_, .delegate(.rowTapped(repository)))):
         state.path.append(
           .repositoryDetail(
             .init(repository: repository)
@@ -113,18 +106,14 @@ public struct FavoriteRepositoryListView: View {
 }
 
 #Preview {
-  FavoriteRepositoryListView(
+  @Shared(.favoriteRepositories) var favoriteRepositories = .init(
+    uniqueElements: (1...10).map(Repository.mock(id:))
+  )
+  return FavoriteRepositoryListView(
     store: .init(
       initialState: FavoriteRepositoryList.State()
     ) {
       FavoriteRepositoryList()
-    } withDependencies: {
-      $0.userDefaultsClient.dataForKey = { _ in
-        let mockRepositories: [Repository] = (1...20).map {
-          .mock(id: $0)
-        }
-        return try! JSONEncoder().encode(mockRepositories)
-      }
     }
   )
 }

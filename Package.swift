@@ -14,7 +14,7 @@ let package = Package(
   dependencies: [
     .package(url: "https://github.com/pointfreeco/swift-case-paths", from: "1.2.3"),
     .package(url: "https://github.com/pointfreeco/combine-schedulers", from: "1.0.0"),
-    .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.9.2"),
+    .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.10.0"),
     .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.2.1"),
     .package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay", from: "1.1.0"),
     .package(url: "https://github.com/pointfreeco/swift-identified-collections", from: "1.0.0"),
@@ -73,7 +73,7 @@ let package = Package(
       dependencies: [
         "Entity",
         "GitHubAPIClient",
-        "UserDefaultsClient",
+        "PersistenceKeys",
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
       ]
     ),
@@ -89,8 +89,8 @@ let package = Package(
       name: "FavoriteRepositoryListFeature",
       dependencies: [
         "Entity",
+        "PersistenceKeys",
         "RepositoryDetailFeature",
-        "UserDefaultsClient",
         .product(name: "CasePaths", package: "swift-case-paths"),
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
         .product(name: "IdentifiedCollections", package: "swift-identified-collections"),
@@ -114,12 +114,10 @@ let package = Package(
       ]
     ),
     .target(
-      name: "UserDefaultsClient",
+      name: "PersistenceKeys",
       dependencies: [
         "Entity",
-        .product(name: "Dependencies", package: "swift-dependencies"),
-        .product(name: "DependenciesMacros", package: "swift-dependencies"),
-        .product(name: "XCTestDynamicOverlay", package: "xctest-dynamic-overlay"),
+        .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
       ]
     ),
   ]
