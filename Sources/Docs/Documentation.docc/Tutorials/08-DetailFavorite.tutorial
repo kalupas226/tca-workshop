@@ -20,7 +20,7 @@
     
     - 現状 `GitHubAPIClient` で `Bundle.main.infoDictionary` から PAT を取得している部分を `BuildConfig/Client.swift` に `BuildConfig` という命名の Client として実装する
     - `GitHubAPIClient` で `BuildConfig` を `@Dependency` 経由で利用し、PAT を取得している部分の処理を置き換える
-    　　- TCA の Repository にある [Discussion](https://github.com/pointfreeco/swift-composable-architecture/discussions/1858) などが参考になる
+      - TCA の Repository にある [Discussion](https://github.com/pointfreeco/swift-composable-architecture/discussions/1858) などが参考になる
     - swift-dependencies に用意されている [@DependencyClient](https://swiftpackageindex.com/pointfreeco/swift-dependencies/main/documentation/dependencies/designingdependencies#DependencyClient-macro) macro を 各種 Client で利用する
 
     @Image(source: "08-image-01.gif", alt: "リポジトリ詳細画面のお気に入り機能の図")
