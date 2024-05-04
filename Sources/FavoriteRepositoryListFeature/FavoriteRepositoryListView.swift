@@ -20,7 +20,7 @@ public struct FavoriteRepositoryList {
 
   public enum Action {
     case onAppear
-    case delete(IndexSet)
+    case onDelete(IndexSet)
     case repositoryRows(IdentifiedActionOf<RepositoryRow>)
     case path(StackAction<Path.State, Path.Action>)
   }
@@ -37,7 +37,7 @@ public struct FavoriteRepositoryList {
           }
         )
         return .none
-      case let .delete(indexSet):
+      case let .onDelete(indexSet):
         state.repositoryRows.remove(atOffsets: indexSet)
         state.favoriteRepositories.remove(atOffsets: indexSet)
         return .none
@@ -89,7 +89,7 @@ public struct FavoriteRepositoryListView: View {
           content: RepositoryRowView.init(store:)
         )
         .onDelete {
-          store.send(.delete($0))
+          store.send(.onDelete($0))
         }
       }
       .navigationTitle("Favorite Repositories")
