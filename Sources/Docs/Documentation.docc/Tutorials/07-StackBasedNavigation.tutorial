@@ -53,12 +53,14 @@
         @Code(name: "RepositoryListView.swift", file: 07-01-code-0005.swift)
       }
       @Step {
-        最後に、`Path` Reducer を動作させるために、`RepositoryList` Reducer と `Path` Reducder を接続する必要があります。  
+        最後に、`Path` Reducer を動作させるために、`RepositoryList` Reducer と `Path` Reducer を接続する必要があります。  
         そのためには、`forEach(_:action:)` という API を利用する必要があります。  
-        この Action は `RepositoryList` Reducer と `RepositoryRow` Reducer を接続する際に利用した `forEach(_:action:element)` とは異なることに注意しましょう。  
+        この API は `RepositoryList` Reducer と `RepositoryRow` Reducer を接続する際に利用した `forEach(_:action:element)` とは異なることに注意しましょう。  
         ただし、使い勝手はほとんど同じで `StackState`・`StackAction` への KeyPath を指定することで実装できます。
 
         @Code(name: "RepositoryListView.swift", file: 07-01-code-0006.swift)
+        
+        > `forEach` を使って child reducer を接続することによって、Tree-based navigation における `ifLet` API と同様に、child state が nil になったタイミング (画面が閉じるなどのタイミング) で、自動的に全ての child effects がキャンセルされたり、子機能で `DismissEffect` (`@Dependency(\.dismiss)`) を利用できるようになるなどの恩恵を受けられます。
       }
     }
   }

@@ -114,6 +114,9 @@
 
         > `destination` が Optional な状態として保持されており、その Optional な状態と接続するために Swift の Optional binding のような名前の `ifLet` という API を利用する必要があります。  
         > Collection に対しては `forEach`, Optional に対しては `ifLet` で接続すると覚えておくと理解しやすいかもしれません。
+        >
+        > `ifLet` を使って child reducer を接続することによって、child state が nil になったタイミング (画面が閉じるなどのタイミング) で、自動的に全ての child effects がキャンセルされたり、子機能で `DismissEffect` (`@Dependency(\.dismiss)`) を利用できるようになるなどの恩恵も受けられます。
+        
       }
       @Step {
         リポジトリ一覧の Row をタップした時に画面遷移させたいため、`RepositoryRow` Reducer に少し実装を追加します。  
