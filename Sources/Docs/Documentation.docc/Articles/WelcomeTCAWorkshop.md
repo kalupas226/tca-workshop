@@ -35,8 +35,15 @@ Workshop では、GitHub の API を利用することになります。
 GitHub の API は Personal Access Token (PAT) を利用することで、API の制限を緩和してリクエストが行えるようになります。  
 無闇やたらに API を利用するわけではないですが、Workshop を円滑に進めるための準備として PAT を用意してもらいます。
 
-[personal access token (classic) の作成](https://docs.github.com/ja/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#personal-access-token-classic-%E3%81%AE%E4%BD%9C%E6%88%90) を参考に PAT を作成してください。  
-GitHub の API を利用するために必要な、`repo` scope が最低限設定されていれば問題ありません。
+それでは早速、[personal access token (classic) の作成](https://docs.github.com/ja/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#personal-access-token-classic-%E3%81%AE%E4%BD%9C%E6%88%90) を参考に PAT を作成しましょう。  
+以下にも手順を簡単に記載しておきます。
+
+- [GitHub の Developer Settings](https://github.com/settings/apps) > Personal access tokens > Tokens (classic) に移動する 
+- 右上の方にある「Generate new token」を選択し、さらに「Generate new token (classic)」を選択する
+- 以下のように token を設定し、「Generate token」を選択する
+  - Note には適当な名前を設定する
+  - Expiration も適当な期限を設定する
+  - Select scopes は repo scope のみにチェックを入れる
 
 PAT を用意できたら、PAT をコピーし Xcode Project の Build Settings にある User-Defined 内の `GITHUB_PERSONAL_ACCESS_TOKEN` に設定してください。
 
