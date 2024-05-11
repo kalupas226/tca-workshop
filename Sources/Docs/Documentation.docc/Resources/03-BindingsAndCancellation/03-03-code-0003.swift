@@ -61,7 +61,7 @@ public struct RepositoryList {
         .debounce(
           id: CancelID.response,
           for: .seconds(0.3),
-          scheduler: DispatchQueue.main
+          scheduler: DispatchQueue.main.eraseToAnyScheduler()
         )
       case .queryChangeDebounced:
         guard !state.query.isEmpty else {

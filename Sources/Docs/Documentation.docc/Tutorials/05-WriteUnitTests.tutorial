@@ -93,7 +93,7 @@
         仮にこのまま API 通信のレスポンスを受け取るテストコードを書いたとしても、テストは失敗してしまいます。  
         原因は、0.3 秒経過しないと API 通信が発火しないコードとなっているためです。  
         この問題を解決するためには、元の実装を少し修正する必要があります。  
-        現在は、`DispatchQueue.main` を指定して 0.3 秒の `debounce` を表現していますが、`DispatchQueue.main` を直接指定してしまっているために、テストでこの依存関係を制御できない状態となっています。  
+        現在は、`DispatchQueue.main.eraseToAnyScheduler` を指定して 0.3 秒の `debounce` を表現していますが、`DispatchQueue.main.eraseToAnyScheduler` を直接指定してしまっているために、テストでこの依存関係を制御できない状態となっています。  
         swift-dependencies には、このために利用できる `@Dependency(\.mainQueue)` が用意されているため、これを利用するように変更しましょう。
         
         @Code(name: "RepositoryListView.swift", file: 05-02-code-0003.swift, previousFile: 05-02-code-0003-previous.swift)
